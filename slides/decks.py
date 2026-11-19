@@ -15,7 +15,13 @@ from django.conf import settings
 
 _FRONT_MATTER = re.compile(r"\A---\s*\n.*?\n---\s*(\n|\Z)", re.DOTALL)
 _COMMENT = re.compile(r"<!--(.*?)-->", re.DOTALL)
-_DIRECTIVE = re.compile(r"^\s*_?[\w-]+\s*:[^\n]*$")
+# Marp 지시어 이름만 지시어로 본다. "출처: ADR-002" 같은 한 줄 노트까지 버리지 않도록 이름을 정해 둔다.
+_MARP_DIRECTIVES = (
+    "marp|theme|style|headingDivider|size|math|title|description|author|image|keywords|url|lang"
+    "|paginate|header|footer|class|color|backgroundColor|backgroundImage|backgroundPosition"
+    "|backgroundRepeat|backgroundSize"
+)
+_DIRECTIVE = re.compile(rf"^\s*_?(?:{_MARP_DIRECTIVES})\s*:[^\n]*$")
 _SLUG = re.compile(r"^[\w-]+$")
 
 

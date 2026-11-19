@@ -55,6 +55,12 @@ class SlidesTest(SimpleTestCase):
         self.assertIn("a: 1\n---\nb: 2", slide.body)
         self.assertEqual(slide.notes, "여기는 발표자 노트")
 
+    def test_one_line_note_with_colon_is_kept(self):
+        Path(self.tmp.name, "colon.md").write_text(
+            "# 제목\n\n<!-- 출처: ADR-002 -->\n<!-- _paginate: false -->\n", encoding="utf-8"
+        )
+        self.assertEqual(load_deck("colon").slides[0].notes, "출처: ADR-002")
+
     def test_list_page(self):
         html = self.client.get("/").content.decode()
         self.assertIn("첫 강의", html)
