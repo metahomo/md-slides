@@ -231,12 +231,12 @@ PR · main push → ci.yml test(pytest) → 통과해야 image 빌드
 |---|---|---|
 | REST + OpenAPI | 기계가 읽는 명세로 호출 | ✔ FastAPI가 명세 자동 생성, `/predict` 토큰 인증 |
 | MCP 서버 | 도구 `classify_paper`: 제목·초록 → 확률·라벨·모델 판 | ✔ 로컬 stdio + 원격 `POST /mcp`(v0.1.4, 토큰·분당 60), 웹 API와 같은 값 |
-| 에이전트 스킬 | 사용법 문서 | 계획 |
+| 에이전트 스킬 | 사용법 문서 — 언제 쓰나·결과 읽기(uncertain 은 사람에게)·오류 | ✔ `skills/paperclf-classify` |
 
 - **AI 사용자를 위한 설계**: 입·출력 스키마 고정 · 응답에 모델 버전과 확률 · 일정한 오류 형식
 - **공개 API 보호 (v0.1.3)**: `/predict`는 Bearer 토큰(서버 `.env`에만) + IP별 분당 60, 넘으면 429 — 실제 요청으로 401·200·429 확인
 
-<!-- 근거: presentation/04-service-for-ai.md, api/mcp_server.py, tests/test_mcp.py, PR #30. 구현된 것은 웹 API 세 경로(/health, /predict, /model)와 로컬 MCP 도구 classify_paper 하나다. /health 는 공개이고 거절 건수가 보인다. 원격 MCP 는 아직 열지 않았다. 스킬은 계획이다. -->
+<!-- 근거: presentation/04-service-for-ai.md, api/mcp_server.py, tests/test_mcp.py, PR #30. 구현: 웹 API(/health 공개, /predict·/mcp 는 토큰·분당 60), MCP 도구 classify_paper 를 로컬 stdio 와 원격 POST /mcp(v0.1.4, PR #38)로, 스킬 문서 skills/paperclf-classify(PR #39). 세 겹 모두 있다. -->
 
 ---
 
