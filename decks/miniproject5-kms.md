@@ -108,14 +108,15 @@ ML 시스템 클라우드 배포 · 2026-11
 
 | 단계 | 상태 |
 |---|---|
-| 코드 판 (pytest → 이미지 → GHCR) | ✔ `v0.1.0` 이미지 푸시 |
-| 모델 판 (학습·게이트·parity) | ✔ Actions에서 통과, 약한 모델은 게이트에서 멈춤 |
-| 서버 배포 · 버킷 승격 · 롤백 | 워크플로 작성 완료, 서버·AWS 작업 후 시연 |
+| 코드 판 (pytest → 이미지 → GHCR → 배포) | ✔ `v0.1.1` 태그 → test·image·deploy |
+| 모델 판 (학습·게이트·parity) | ✔ 통과, 5% 데이터·parity 1e-12는 promote 전에 멈춤 |
+| 서버 배포 · 버킷 승격 · 롤백 | ✔ 승격 m20261119-7·8, 되돌리기 →7, 다시 →8 |
+| 운영 장부 DB | ✔ 미통과 판 m20261119-9의 배포 기록을 트리거가 거부 |
 
-- PR #19 (분류기·워크플로) · #20 (ADR 확정) · #21 (서버 준비) 병합
-- 배포 잡은 저장소 변수 `DEPLOY_ENABLED` 하나로 켠다
+- 작업용 서버 `https://54-252-22-31.sslip.io` · 지금 운영 app v0.1.2 · model m20261119-11
+- PR #19 · #20 · #21 병합, 장부 DB PR #26, 릴리스 v0.1.1, 보드 Done 13/16
 
-<!-- 발표 직전에 서버 상태를 다시 확인해 이 표를 고친다. 막힌 이유: 서버 SSH 키와 AWS 자격 증명이 작업 환경에 없었다(reports/2026-11-19-autonomous-progress.md 4절). -->
+<!-- 승격·롤백마다 /health model_version 일치. 증거: v0.1.1 https://github.com/metahomo/miniproject5_kms/actions/runs/44513840582 · 승격 →7 https://github.com/metahomo/miniproject5_kms/actions/runs/44514427871 · →8 https://github.com/metahomo/miniproject5_kms/actions/runs/44514698446 · 되돌리기 →7 https://github.com/metahomo/miniproject5_kms/actions/runs/44514983743 · 다시 →8 https://github.com/metahomo/miniproject5_kms/actions/runs/44515052182 · 5% 차단 https://github.com/metahomo/miniproject5_kms/actions/runs/44515846566 · parity 차단 https://github.com/metahomo/miniproject5_kms/actions/runs/44519475156 · 장부 승격 m20261119-11 https://github.com/metahomo/miniproject5_kms/actions/runs/44519470540 · 코드 되돌리기 v0.1.0 https://github.com/metahomo/miniproject5_kms/actions/runs/44453216170. 버킷 paperclf-models-apse2(small_1_0, $1/월), 키 없이 리소스 액세스. Tailscale 등록, SSH 22번 닫기는 마감 직전(아직 열림). -->
 
 ---
 
@@ -133,7 +134,7 @@ ML 시스템 클라우드 배포 · 2026-11
 | 진행 순서 지시: 조감도 → GitHub → 칸반 → 강의안 | 칸반보드(5열, 이슈 16개) 구성 |
 | 결정 확정: ADR-005 · 006 accepted | 교사 라벨 867편, 스냅숏 형식 |
 | 병합 · 태그 · 서버 작업 | 학생 모델 · 게이트 · ONNX · 서빙 API |
-| 비용 드는 자원(AWS)은 만들지 않게 함 | ci · model · rollback 워크플로 |
+| 비용 드는 자원(AWS)은 연구자 승인 뒤에만 (버킷 $1/월) | ci · model · rollback 워크플로 |
 
 - 지침 두 겹: **사령관**(`CLAUDE.md`) · **부관**(`AGENTS.md`), 위임 지시서 5요소
 
@@ -150,6 +151,8 @@ ML 시스템 클라우드 배포 · 2026-11
 | ONNX | 원본과 차이 5.4e-7, 진단 스크립트로 옵션 문제 발견 |
 | API | `/health` · `/predict` 응답, parity 스크립트 |
 | 저작권 | 스냅숏에 제목·초록 필드가 없음을 출력 형식으로 |
+| 배포·롤백 | 승격·되돌리기마다 `/health`의 `model_version` 일치 |
+| 장부 | 운영 DB 트리거가 미통과 판 배포 기록을 거부 |
 
 - 모든 작업을 **AI 활용 기록**(`ai-usage/`)에 한 건씩 남겼다 (7건)
 
@@ -185,12 +188,12 @@ ML 시스템 클라우드 배포 · 2026-11
 | 방식 | AI가 보는 모습 | 이 프로젝트에서 |
 |---|---|---|
 | REST + OpenAPI | 기계가 읽는 명세로 호출 | FastAPI가 명세를 자동으로 만든다 |
-| MCP 서버 | 도구 하나: "논문 적합도 판정" | 마감 단계 계획 |
+| MCP 서버 | 도구 `classify_paper`: 제목·초록 → 확률·라벨·모델 판 | ✔ 로컬 stdio 구현, 웹 API 와 같은 값 (원격 판·인증은 아직, HTTPS는 켜짐) |
 | 에이전트 스킬 | 사용법 문서 | 계획 |
 
 **AI 사용자를 위한 설계**: 입·출력 스키마 고정 · 응답에 모델 버전과 확률 · 일정한 오류 형식 · 인증과 사용량 제한
 
-<!-- presentation/04-service-for-ai.md는 아직 빈 틀이다. 여기 내용은 검토 방향이며 구현된 것은 /health, /predict, /model 세 경로뿐이다. -->
+<!-- 근거: presentation/04-service-for-ai.md, api/mcp_server.py, tests/test_mcp.py. 구현된 것은 웹 API 세 경로(/health, /predict, /model)와 로컬 MCP 도구 classify_paper 하나다. 스킬은 계획이다. -->
 
 ---
 
