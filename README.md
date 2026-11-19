@@ -25,6 +25,15 @@ uv run python manage.py runserver 127.0.0.1:10002
 
 발표 중 단축키: 방향키로 이동, **F** 전체화면, **S** 발표자 화면(노트, 다음 장, 타이머), **Esc** 전체 보기.
 
+## 외부 공개 (GitHub Pages)
+
+`main`에 push하면 GitHub Actions(`.github/workflows/pages.yml`)가 테스트를 돌린 뒤 강의안을 정적 HTML로 만들어 GitHub Pages에 배포합니다. 서버를 띄우지 않아도 누구나 볼 수 있습니다.
+
+- 사이트: https://metahomo.github.io/md-slides/
+- 로컬에서 정적 사이트 만들기: `uv run python manage.py build_site --out _site --base-path /md-slides/`
+
+`decks/`에 넣은 강의안은 모두 공개됩니다. 공개하면 안 되는 자료는 넣지 마세요.
+
 ## 강의안 작성 규칙
 
 ```markdown

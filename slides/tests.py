@@ -1,3 +1,4 @@
+import os
 import tempfile
 from pathlib import Path
 
@@ -75,6 +76,19 @@ class SlidesTest(SimpleTestCase):
         # textarea 안에서 닫는 태그로 탈출하지 못하도록 이스케이프된다.
         self.assertNotIn("<script>alert(1)</script>", html)
         self.assertIn("&lt;script&gt;", html)
+
+    def test_build_site_writes_pages_under_base_path(self):
+        from django.core.management import call_command
+
+        out = Path(self.tmp.name, "site")
+        call_command("build_site", "--out", str(out), "--base-path", "/md-slides", stdout=open(os.devnull, "w"))
+        index = (out / "index.html").read_text(encoding="utf-8")
+        self.assertIn('href="/md-slides/intro/"', index)
+        detail = (out / "intro" / "index.html").read_text(encoding="utf-8")
+        self.assertIn('href="/md-slides/"', detail)
+        self.assertTrue((out / ".nojekyll").exists())
+        # 빌드 뒤에도 일반 요청의 주소는 그대로다.
+        self.assertIn('href="/intro/"', self.client.get("/").content.decode())
 
     def test_missing_or_invalid_slug_is_404(self):
         for url in ["/nope/", "/secret/", "/..%2Fsecret/"]:
