@@ -230,7 +230,7 @@ PR · main push → ci.yml test(pytest) → 통과해야 image 빌드
 | 방식 | AI가 보는 모습 | 이 프로젝트에서 |
 |---|---|---|
 | REST + OpenAPI | 기계가 읽는 명세로 호출 | ✔ FastAPI가 명세 자동 생성, `/predict` 토큰 인증 |
-| MCP 서버 | 도구 `classify_paper`: 제목·초록 → 확률·라벨·모델 판 | ✔ 로컬 stdio, 웹 API와 같은 값 (원격 판은 아직) |
+| MCP 서버 | 도구 `classify_paper`: 제목·초록 → 확률·라벨·모델 판 | ✔ 로컬 stdio + 원격 `POST /mcp`(v0.1.4, 토큰·분당 60), 웹 API와 같은 값 |
 | 에이전트 스킬 | 사용법 문서 | 계획 |
 
 - **AI 사용자를 위한 설계**: 입·출력 스키마 고정 · 응답에 모델 버전과 확률 · 일정한 오류 형식
