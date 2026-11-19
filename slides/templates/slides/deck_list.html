@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="ko">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>강의안 목록</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+</head>
+
+<body class="bg-white text-slate-800 antialiased">
+    <main class="mx-auto max-w-3xl px-6 py-16">
+        <h1 class="text-3xl font-bold">강의안</h1>
+        <p class="mt-2 text-sm text-slate-500">MD 파일 하나가 강의안 하나입니다. 발표 중 <kbd>F</kbd> 전체화면, <kbd>S</kbd> 발표자 화면, <kbd>Esc</kbd> 전체 보기.</p>
+
+        <ul class="mt-8 divide-y divide-slate-200 border-y border-slate-200">
+            {% for deck in decks %}
+            <li>
+                <a href="{% url 'deck_detail' deck.slug %}" class="flex items-center justify-between py-4 hover:text-indigo-600">
+                    <span class="font-medium">{{ deck.title }}</span>
+                    <span class="text-sm text-slate-400">{{ deck.slides|length }}장 · {{ deck.slug }}.md</span>
+                </a>
+            </li>
+            {% empty %}
+            <li class="py-8 text-center text-slate-500">아직 강의안이 없습니다. <code>decks/</code> 폴더에 .md 파일을 넣어 주세요.</li>
+            {% endfor %}
+        </ul>
+    </main>
+</body>
+
+</html>

@@ -1,0 +1,17 @@
+[project]
+name = "md-slides"
+version = "0.1.0"
+requires-python = ">=3.15"
+dependencies = [
+    "django>=6.1.3",
+]
+
+[dependency-groups]
+dev = [
+    "pytest>=9.2.0",
+    "pytest-django>=4.14.0",
+]
+
+[tool.pytest.ini_options]
+DJANGO_SETTINGS_MODULE = "md_slides.settings"
+python_files = ["test_*.py", "tests.py"]

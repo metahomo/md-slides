@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="ko">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{{ deck.title }}</title>
+    {# 발표 화면은 사이트 레이아웃(헤더·푸터) 없이 전체 화면으로 띄운다. #}
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/theme/white.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/plugin/highlight/monokai.css">
+    <style>
+        :root {
+            --r-main-font: "Apple SD Gothic Neo", "Malgun Gothic", "Noto Sans KR", sans-serif;
+            --r-heading-font: var(--r-main-font);
+            --r-main-font-size: 34px;
+            --r-heading-text-transform: none;
+        }
+        .reveal .slides section { text-align: left; }
+        .reveal table { font-size: 0.8em; }
+        .back { position: fixed; top: 12px; left: 16px; z-index: 30; font: 14px var(--r-main-font); color: #64748b; text-decoration: none; }
+    </style>
+</head>
+
+<body>
+    <a class="back" href="{% url 'deck_list' %}">← 강의안 목록</a>
+    <div class="reveal">
+        <div class="slides">
+            {% for slide in deck.slides %}
+            {# textarea 안의 MD는 자동 이스케이프되고, reveal.js가 원래 문자열로 읽어 렌더링한다. #}
+            <section data-markdown data-separator="^\r?\n<<<slide>>>\r?\n$" data-separator-notes="^<<<notes>>>$">
+                <textarea data-template>
+{{ slide.body }}
+{% if slide.notes %}
+<<<notes>>>
+{{ slide.notes }}
+{% endif %}</textarea>
+            </section>
+            {% endfor %}
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/plugin/markdown/markdown.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/plugin/highlight/highlight.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/plugin/notes/notes.js"></script>
+    <script>
+        Reveal.initialize({
+            hash: true,
+            slideNumber: "c/t",
+            plugins: [RevealMarkdown, RevealHighlight, RevealNotes],
+        });
+    </script>
+</body>
+
+</html>
