@@ -97,6 +97,31 @@
             maxScale: 3,
             plugins: [RevealMarkdown, RevealHighlight, RevealNotes],
         });
+        // 코드 상자 글자 맞춤: 가장 긴 줄이 검은 상자 폭을 채우도록 글자를 키운다 (2026-11-20 연구자 지시)
+        // 상한 — 본문 글자의 1.1배, 장 높이의 45% 를 넘지 않게
+        function fitCode(slide) {
+            if (!slide) return;
+            slide.querySelectorAll('pre').forEach(pre => {
+                const code = pre.querySelector('code');
+                if (!code) return;
+                pre.style.fontSize = '';
+                const base = parseFloat(getComputedStyle(pre).fontSize);
+                const cap = parseFloat(getComputedStyle(slide).fontSize) * 1.1;
+                const avail = pre.clientWidth - 24;
+                // 글 실제 폭: 잠시 inline-block 으로 재면 상자 폭이 아니라 가장 긴 줄 폭이 나온다
+                const prev = [code.style.display, code.style.width, code.style.maxWidth];
+                code.style.display = 'inline-block'; code.style.width = 'auto'; code.style.maxWidth = 'none';
+                const need = code.scrollWidth;
+                [code.style.display, code.style.width, code.style.maxWidth] = prev;
+                if (!need || !avail) return;
+                let size = Math.min(cap, base * avail / need);
+                const lines = code.textContent.replace(/\n$/, '').split('\n').length;
+                size = Math.min(size, 720 * 0.45 / (lines * 1.3));
+                if (size > base) pre.style.fontSize = size.toFixed(1) + 'px';
+            });
+        }
+        Reveal.on('ready', e => fitCode(e.currentSlide));
+        Reveal.on('slidechanged', e => fitCode(e.currentSlide));
     </script>
 
 </body>
