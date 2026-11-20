@@ -10,10 +10,10 @@
 |---|---|---|
 | 크기 | 16:9, 1280×720 (창에 맞게 0.2~3배로 줄고 는다) | `slides/templates/slides/deck_detail.html` `Reveal.initialize` |
 | 바깥 여백 | 0 (`margin: 0`) | 같은 곳 |
-| 세로 정렬 | 위부터 채움 (`center: false`). `lead` 장만 아래로 내려 가운데처럼 | 같은 곳 + CSS `section.lead` |
+| 세로 정렬 | 제목(`##`)은 위에 붙고, 나머지 내용은 남은 높이의 가운데 (`center: false` + 보이는 장만 flex). `lead` 장은 아래로 내려 가운데처럼 | CSS `section.present`, `section.lead` |
 | 장 안쪽 여백 | 위아래 14px · 좌우 22px | CSS `.reveal .slides section` |
 | 장표 경계 | 1280×720 캔버스 안쪽 끝에 **검은 3px 네모 테두리**(창 끝에서 잘리지 않음), 바깥은 옅은 회색 — 장 크기가 보인다 | CSS `.reveal .slides::after`, `.reveal-viewport` |
-| 글자 | 본문 0.95em, `#` 1.9em, `##` 1.3em, `###` 1.05em, 표 0.85em(장 폭 100%), 코드 0.55em | CSS |
+| 글자 | 본문 0.95em, `#` 1.9em, `##` 1.3em, `###` 1.05em, 표 0.85em(장 폭 100%), 코드 0.7em(검은 상자가 장 폭을 채우게) | CSS |
 
 덱 MD 안에 `<style>` 로 제목 크기·여백을 넣지 않는다 — 모든 덱이 템플릿 하나를 따른다.
 

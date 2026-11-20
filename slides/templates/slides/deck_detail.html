@@ -31,8 +31,13 @@
         .reveal table { font-size: 0.85em; width: 100%; margin: .4em 0; }
         .reveal section.dense table { font-size: 0.75em; } /* 긴 칸이 많은 표 — `<!-- _class: dense -->` */
         .reveal table th, .reveal table td { padding: .25em .6em; }
-        .reveal pre { font-size: .55em; width: 100%; box-shadow: none; }
+        .reveal pre { font-size: .7em; width: 100%; box-shadow: none; }
         .reveal ul ul, .reveal ol ol { font-size: .9em; }
+        /* 세로 배치: 제목은 위, 나머지는 남은 높이의 가운데로 — 위 절반에만 몰리던 것 (2026-11-20 연구자 지시)
+           보이는 장(.present)에만 flex 를 준다 — 숨은 장은 reveal 이 display:none 으로 둔다 */
+        .reveal .slides > section.present:not(.lead) { display: flex !important; flex-direction: column; height: 720px; }
+        .reveal .slides > section.present:not(.lead) > h2:first-child { margin-bottom: auto; }
+        .reveal .slides > section.present:not(.lead)::after { content: ""; margin-top: auto; }
         /* Marp `<!-- _class: lead -->` — 가운데 정렬 표지·절 구분 */
         .reveal section.lead { text-align: center; padding-top: 200px !important; } /* center: false 라서 lead 장만 아래로 내려 가운데처럼 */
         .reveal section.lead h1 { font-size: 2.4em; }
