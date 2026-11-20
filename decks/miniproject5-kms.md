@@ -286,13 +286,13 @@ KMS 수집 새 논문 7편 → 교사 라벨(include 6 · exclude 1) → 스냅�
 
 | 항목 | 작업용 서버 | 최종 서버 |
 |---|---|---|
-| 주소 | `54-252-22-31.sslip.io` (54.252.22.31) | `nlpwizard.eta.pyhub.kr` · `54-253-32-153.sslip.io` |
+| 주소 | `54-252-22-31.sslip.io` (54.252.22.31) | **`https://nlpwizard.eta.pyhub.kr`** (54.253.32.153) |
 | 맡는 일 | 승격 · 롤백 · 장부 — 검증의 현장 | 최종 서비스 |
 | 모델 판 받는 길 | 버킷 | 같은 Actions 실행 산출물 (`model-artifacts`) |
 | 러너 | `paperclf` | `paperclf-final` (이름표 `final`) |
 | 상태 | **운영 중** | **운영 중** (v0.1.5 · m20261120-24) |
 
-<!-- runbooks/final-server.md(PR #45·#56). 최종 서버 = 연구자 계정 새 Lightsail 인스턴스, 고정 IP 54.253.32.153. 11-20 bootstrap.sh final → 러너 paperclf-final → FINAL_ENABLED=true → model 실행(promote-final) → v0.1.5 태그 재실행(deploy-final). 첫 promote-final 은 이미지가 없어 실패했고 deploy-final 뒤 정상. 도메인 nlpwizard.eta.pyhub.kr 은 새 IP 로 레코드 변경 요청 중 — 바뀌기 전에는 54-253-32-153.sslip.io 로 시연. -->
+<!-- runbooks/final-server.md(PR #45·#56). 최종 서버 = 연구자 계정 새 Lightsail 인스턴스, 고정 IP 54.253.32.153. 11-20 bootstrap.sh final → 러너 paperclf-final → FINAL_ENABLED=true → model 실행(promote-final) → v0.1.5 태그 재실행(deploy-final). 첫 promote-final 은 이미지가 없어 실패했고 deploy-final 뒤 정상. 11-20 도메인 nlpwizard.eta.pyhub.kr 을 새 고정 IP 54.253.32.153 으로 바꿈(연구자) → Caddy 가 Let's Encrypt 인증서 자동 발급, https 운영. 시연은 https://nlpwizard.eta.pyhub.kr/health. -->
 
 ---
 
