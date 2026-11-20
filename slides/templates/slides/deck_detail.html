@@ -19,6 +19,9 @@
         /* 16:9 (1280×720, Marp 기본과 같음) — 화면에 맞게 전체가 비율로 줄고 는다 */
         .reveal .slides section { text-align: left; font-size: 0.9em; padding: 14px 22px !important; box-sizing: border-box; }
         .reveal .slides section > :first-child { margin-top: 0; }
+        /* 장표 경계 — 1280×720 캔버스에 테두리, 바깥은 옅은 회색 (2026-11-20 연구자 지시) */
+        .reveal-viewport { background: #e2e8f0; }
+        .reveal .slides { background: #fff; outline: 2px solid #94a3b8; box-shadow: 0 2px 12px rgba(15,23,42,.15); }
         .reveal h1 { font-size: 1.9em; }
         .reveal h2 { font-size: 1.3em; margin-bottom: .3em; }
         .reveal h3 { font-size: 1.05em; }

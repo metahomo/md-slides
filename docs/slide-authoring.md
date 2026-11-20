@@ -12,6 +12,7 @@
 | 바깥 여백 | 0 (`margin: 0`) | 같은 곳 |
 | 세로 정렬 | 위부터 채움 (`center: false`). `lead` 장만 아래로 내려 가운데처럼 | 같은 곳 + CSS `section.lead` |
 | 장 안쪽 여백 | 위아래 14px · 좌우 22px | CSS `.reveal .slides section` |
+| 장표 경계 | 1280×720 캔버스에 회색 테두리·그림자, 바깥은 옅은 회색 — 장 크기가 보인다 | CSS `.reveal .slides`, `.reveal-viewport` |
 | 글자 | 본문 0.9em, `#` 1.9em, `##` 1.3em, `###` 1.05em, 표 0.75em, 코드 0.5em | CSS |
 
 덱 MD 안에 `<style>` 로 제목 크기·여백을 넣지 않는다 — 모든 덱이 템플릿 하나를 따른다.
