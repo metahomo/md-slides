@@ -182,7 +182,7 @@ PR · main → ci test(pytest) → 통과해야 image
 
 <p class="fragment">변환기 옵션 하나로 모델이 달라진다 → 학습 직후와 이미지, 두 곳에서 본다</p>
 
-<!-- float32 입력도 오차가 커서 ONNX 입력을 double 로 했다. 최신 판 = m20261120-17(PR #44). parity 차단 실행: https://github.com/metahomo/miniproject5_kms/actions/runs/44519475156 -->
+<!-- float32 입력도 오차가 커서 ONNX 입력을 double 로 했다. 최신 판 = m20261120-24(11-20 최종 서버 개통 때 같은 데이터로 재학습, F1 0.9609 · parity 4.1e-7). 새 데이터 판은 m20261120-17(PR #44). parity 차단 실행: https://github.com/metahomo/miniproject5_kms/actions/runs/44519475156 -->
 
 ---
 
@@ -197,7 +197,8 @@ PR · main → ci test(pytest) → 통과해야 image
 | m20261119-7 · 8 · 11 | 통과 | 통과 | **승격** |
 | m20261119-9 (데이터 5%) | 실패 | — | 보류 |
 | m20261119-12 (허용 1e-12) | 통과 | 실패 | 보류 |
-| **m20261120-17** (새 데이터) | 통과 | 통과 | **승격 — 지금 운영** |
+| m20261120-17 (새 데이터) | 통과 | 통과 | 승격 |
+| **m20261120-24** (최종 서버 개통) | 통과 | 통과 | **승격 — 두 서버 운영** |
 
 <p class="fragment">장부 트리거: <code>ERROR: model m20261119-9 has not passed gate and parity</code></p>
 
@@ -254,7 +255,7 @@ KMS 수집 새 논문 7편 → 교사 라벨(include 6 · exclude 1) → 스냅�
 | 항목 | 지금 |
 |---|---|
 | 주소 | `https://54-252-22-31.sslip.io` |
-| 판 | app **v0.1.5** · model **m20261120-17** (F1 0.9609 · parity 5.5e-7) |
+| 판 | app **v0.1.5** · model **m20261120-24** (F1 0.9609 · parity 4.1e-7) |
 | 보호 | 토큰 · 분당 60 · 보안 헤더(HSTS · nosniff · no-referrer) |
 | 릴리스 | v0.1.1 · v0.1.4 · v0.1.5 |
 | 보드 | Done **13/16** |
@@ -285,17 +286,17 @@ KMS 수집 새 논문 7편 → 교사 라벨(include 6 · exclude 1) → 스냅�
 
 | 항목 | 작업용 서버 | 최종 서버 |
 |---|---|---|
-| 주소 | `54-252-22-31.sslip.io` (54.252.22.31) | `nlpwizard.eta.pyhub.kr` |
+| 주소 | `54-252-22-31.sslip.io` (54.252.22.31) | `nlpwizard.eta.pyhub.kr` · `54-253-32-153.sslip.io` |
 | 맡는 일 | 승격 · 롤백 · 장부 — 검증의 현장 | 최종 서비스 |
 | 모델 판 받는 길 | 버킷 | 같은 Actions 실행 산출물 (`model-artifacts`) |
 | 러너 | `paperclf` | `paperclf-final` (이름표 `final`) |
-| 상태 | **운영 중** | **준비 완료 · 접속 대기** (PR #45) |
+| 상태 | **운영 중** | **운영 중** (v0.1.5 · m20261120-24) |
 
-<!-- runbooks/final-server.md(PR #45, 아직 열려 있음). 최종 서버는 작업용과 다른 AWS 계정이라 연구자 버킷에 붙일 수 없다. 서버 접근(공개키 등록)이 되면 bootstrap.sh → FINAL_ENABLED=true → 태그 재실행·model 실행 순서. 아직 올라가지 않았다고 분명히 말한다. -->
+<!-- runbooks/final-server.md(PR #45·#56). 최종 서버 = 연구자 계정 새 Lightsail 인스턴스, 고정 IP 54.253.32.153. 11-20 bootstrap.sh final → 러너 paperclf-final → FINAL_ENABLED=true → model 실행(promote-final) → v0.1.5 태그 재실행(deploy-final). 첫 promote-final 은 이미지가 없어 실패했고 deploy-final 뒤 정상. 도메인 nlpwizard.eta.pyhub.kr 은 새 IP 로 레코드 변경 요청 중 — 바뀌기 전에는 54-253-32-153.sslip.io 로 시연. -->
 
 ---
 
-## 스위치 하나 — `FINAL_ENABLED`를 켜기 전엔 아무 일도 없다
+## 스위치 하나 — `FINAL_ENABLED`를 켜면 두 서버에 함께
 
 *최종 서버 잡은 작업용 서버가 통과시킨 판만 받는다*
 
@@ -308,7 +309,7 @@ rollback  rollback(작업용) · rollback-final(최종, 서버에 남은 판으�
 ```
 
 > [!WARNING]
-> 강조한 줄은 `vars.FINAL_ENABLED == 'true'` 일 때만 돈다 — 지금은 **꺼져 있고 접속 대기**
+> 강조한 줄은 `vars.FINAL_ENABLED == 'true'` 일 때만 돈다 — 11-20 **켰다**: 태그 하나로 두 서버에 함께 배포
 
 <!-- promote-final 은 needs: [train, promote] — 작업용 서버 승격이 끝난 판만 간다. 끄기: gh variable set FINAL_ENABLED --body false. 출처: PR #45 의 ci.yml · model.yml · rollback.yml. -->
 
@@ -359,7 +360,7 @@ rollback  rollback(작업용) · rollback-final(최종, 서버에 남은 판으�
 
 | 산출물 | 확인한 방법 |
 |---|---|
-| 코드 | pytest 32개 + Actions `ci` |
+| 코드 | pytest 87개 + Actions `ci` |
 | 게이트 · parity | 통과·실패를 실행 출력으로 |
 | 배포 · 롤백 | 매번 `/health`의 판 번호 일치 |
 | 장부 | 운영 DB 트리거가 미통과 판 거부 |
