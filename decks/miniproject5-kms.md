@@ -104,7 +104,7 @@ GPU 없는 서버에서 LLM의 판단을 싸게 서빙하고, 검증을 통과�
 </div>
 </div>
 
-<p class="fragment">첫 스냅숏 <b>867편</b> — include 641 · exclude 211 · uncertain 15</p>
+<p class="fragment">첫 스냅숏 <b>867편</b> — include 641 · exclude 211 · uncertain 15 · 11-20 새 7편 더해 874편</p>
 
 <!-- ADR-005. 분할: 열쇠 해시 % 5 == 0 → 게이트 시험지(약 20%, 178편). 새 데이터가 와도 기존 논문의 분할은 바뀌지 않는다. 대안이었던 원문 저장은 저작권, 식별자만 두고 학습 때 API 로 다시 받기는 재현성 때문에 버렸다. -->
 
@@ -141,7 +141,7 @@ PR · main → ci test(pytest) → 통과해야 image
 
 ## 시연 ② 게이트 셋 — 하한 하나로는 약한 모델을 못 거른다
 
-*데이터가 불균형(include 79%)이라 2번이 핵심이다*
+*시험지가 불균형(include 140/178 = 79%)이라 2번이 핵심이다*
 
 1. include F1 ≥ **0.80** (하한)
 2. F1 ≥ **기준선 + 0.05** — "전부 include"만 답해도 F1 0.8805
@@ -149,7 +149,7 @@ PR · main → ci test(pytest) → 통과해야 image
 
 <p class="fragment">시험지 = 교사 라벨 고정 20% (178편)</p>
 
-<!-- ADR-006. 하이퍼파라미터 C 를 게이트 시험지로 고르면 시험지에 과적합하므로 미리 정한 4를 유지했다. -->
+<!-- ADR-006. 기준선은 데이터마다 다시 잰다 — 11-19 0.8805, 새 7편을 더한 11-20 0.882. 하이퍼파라미터 C 를 게이트 시험지로 고르면 시험지에 과적합하므로 미리 정한 4를 유지했다. -->
 
 ---
 
@@ -249,7 +249,7 @@ KMS 수집 새 논문 7편 → 교사 라벨(include 6 · exclude 1) → 스냅�
 | 항목 | 지금 |
 |---|---|
 | 주소 | `https://54-252-22-31.sslip.io` |
-| 판 | app **v0.1.4** · model **m20261120-17** |
+| 판 | app **v0.1.4** · model **m20261120-17** (F1 0.9609 · parity 5.5e-7) |
 | 보호 | 토큰 · 분당 60 · 보안 헤더(HSTS · nosniff · no-referrer) |
 | 릴리스 | v0.1.1 · v0.1.4 |
 | 보드 | Done **13/16** |
@@ -269,6 +269,41 @@ KMS 수집 새 논문 7편 → 교사 라벨(include 6 · exclude 1) → 스냅�
 <p class="fragment">남은 것: 22번 닫기·정리(#1·#8), 마감·발표(#11)</p>
 
 <!-- uptime PR #42(첫 실행 성공). 복구 훈련: 버킷 최신 덤프 → 임시 DB, 건수·운영 판·트리거 일치(PR #37) — 복원해 보니 API 계정이 없어 권한 줄이 실패하는 것을 찾아 절차에 선생성을 넣었다. -->
+
+---
+
+## 학습·검증은 작업용 계정, 서비스는 최종 서버
+
+*AWS 계정이 둘이다 — 버킷을 함께 쓸 수 없어 같은 실행의 산출물로 판을 건넨다*
+
+| 항목 | 작업용 서버 | 최종 서버 |
+|---|---|---|
+| 주소 | `54-252-22-31.sslip.io` (54.252.22.31) | `nlpwizard.eta.pyhub.kr` |
+| 맡는 일 | 승격 · 롤백 · 장부 — 검증의 현장 | 최종 서비스 |
+| 모델 판 받는 길 | 버킷 | 같은 Actions 실행 산출물 (`model-artifacts`) |
+| 러너 | `paperclf` | `paperclf-final` (이름표 `final`) |
+| 상태 | **운영 중** | **준비 완료 · 접속 대기** (PR #45) |
+
+<!-- runbooks/final-server.md(PR #45, 아직 열려 있음). 최종 서버는 작업용과 다른 AWS 계정이라 연구자 버킷에 붙일 수 없다. 서버 접근(공개키 등록)이 되면 bootstrap.sh → FINAL_ENABLED=true → 태그 재실행·model 실행 순서. 아직 올라가지 않았다고 분명히 말한다. -->
+
+---
+
+## 스위치 하나 — `FINAL_ENABLED`를 켜기 전엔 아무 일도 없다
+
+*최종 서버 잡은 작업용 서버가 통과시킨 판만 받는다*
+
+```text {2,4}
+ci        v* 태그 → test → image → deploy(작업용)
+                                  → deploy-final(최종)
+model     train → 게이트 → parity → promote(작업용, 버킷)
+                                  → promote-final(최종, 실행 산출물)
+rollback  rollback(작업용) · rollback-final(최종, 서버에 남은 판으로)
+```
+
+> [!WARNING]
+> 강조한 줄은 `vars.FINAL_ENABLED == 'true'` 일 때만 돈다 — 지금은 **꺼져 있고 접속 대기**
+
+<!-- promote-final 은 needs: [train, promote] — 작업용 서버 승격이 끝난 판만 간다. 끄기: gh variable set FINAL_ENABLED --body false. 출처: PR #45 의 ci.yml · model.yml · rollback.yml. -->
 
 ---
 
@@ -381,7 +416,7 @@ KMS 수집 새 논문 7편 → 교사 라벨(include 6 · exclude 1) → 스냅�
 
 | 방식 | AI가 보는 모습 | 상태 |
 |---|---|---|
-| REST + OpenAPI | 명세를 읽고 `POST /predict` | ✔ v0.1.3 |
+| REST + OpenAPI | 명세를 읽고 `POST /predict` | ✔ v0.1.0, 보호 v0.1.3 |
 | MCP 서버 | 도구 `classify_paper` | ✔ 로컬 stdio + 원격 `POST /mcp`(v0.1.4) |
 | 에이전트 스킬 | 언제 쓰나 · 결과 읽기 · 오류 | ✔ `skills/paperclf-classify` |
 
