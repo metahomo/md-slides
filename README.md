@@ -70,7 +70,7 @@ paginate: true
 | ` ```javascript {1,2} ` | 1·2번 줄 강조(reveal.js `[1,2]` 로 바꿔 넣음) |
 | `<p class="fragment">` · `<div style="display:grid;…">` | 단계별 등장 · 2단 (`div` 안 MD 앞뒤 빈 줄) |
 
-화면은 16:9(1280×720)로 그리고 창 크기에 맞게 줄인다. 예시: [`decks/md-syntax-guide.md`](decks/md-syntax-guide.md)
+화면은 16:9(1280×720), 바깥 여백 0, 위부터 채운다. **작성 규칙 전체: [`docs/slide-authoring.md`](docs/slide-authoring.md)** · 예시: [`decks/md-syntax-guide.md`](decks/md-syntax-guide.md)
 
 예시는 [`decks/sample-lecture.md`](decks/sample-lecture.md)와 [`decks/miniproject5-kms.md`](decks/miniproject5-kms.md)를 보세요.
 
