@@ -17,7 +17,8 @@
             --r-heading-text-transform: none;
         }
         /* 16:9 (1280×720, Marp 기본과 같음) — 화면에 맞게 전체가 비율로 줄고 는다 */
-        .reveal .slides section { text-align: left; font-size: 0.8em; }
+        .reveal .slides section { text-align: left; font-size: 0.9em; padding: 14px 22px !important; box-sizing: border-box; }
+        .reveal .slides section > :first-child { margin-top: 0; }
         .reveal h1 { font-size: 1.9em; }
         .reveal h2 { font-size: 1.3em; margin-bottom: .3em; }
         .reveal h3 { font-size: 1.05em; }
@@ -26,7 +27,7 @@
         .reveal pre { font-size: .5em; width: 100%; box-shadow: none; }
         .reveal ul ul, .reveal ol ol { font-size: .9em; }
         /* Marp `<!-- _class: lead -->` — 가운데 정렬 표지·절 구분 */
-        .reveal section.lead { text-align: center; } /* 세로 가운데는 reveal 기본(center: true) */
+        .reveal section.lead { text-align: center; padding-top: 200px !important; } /* center: false 라서 lead 장만 아래로 내려 가운데처럼 */
         .reveal section.lead h1 { font-size: 2.4em; }
         .reveal section.lead h2 { font-size: 1.6em; }
         .reveal section.lead p { color: #64748b; }
@@ -78,7 +79,10 @@
             slideNumber: "c/t",
             width: 1280,
             height: 720,
-            margin: 0.06,
+            margin: 0,          // 바깥 여백 없음 (2026-11-20 연구자 지시)
+            center: false,      // 위에서부터 채운다 — 위아래 빈 공간 없앰 (lead 장만 가운데)
+            minScale: 0.2,
+            maxScale: 3,
             plugins: [RevealMarkdown, RevealHighlight, RevealNotes],
         });
     </script>
