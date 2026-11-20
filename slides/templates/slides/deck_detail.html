@@ -123,27 +123,31 @@
                 if (filled < avail * 0.95) pre.style.width = Math.ceil(filled + 40) + 'px';
             });
         }
-        // 표 글자 맞춤: 표가 가진 글을 장 폭에 가깝게 키운다(상한 본문 1.4배). 장이 넘치면 다시 줄인다
+        // 표 글자 맞춤: 표 폭을 글에 맞추고 글자를 키워 장 폭을 채운다(상한 본문 1.8배). 장이 넘치면 다시 줄인다
         function fitTables(slide) {
             if (!slide) return;
             const body = parseFloat(getComputedStyle(slide).fontSize);
             slide.querySelectorAll('table').forEach(tb => {
-                tb.style.fontSize = '';
+                tb.style.fontSize = ''; tb.style.width = '';
                 const base = parseFloat(getComputedStyle(tb).fontSize);
                 const avail = slide.clientWidth - 48;
                 tb.style.width = 'auto';
                 const natural = tb.scrollWidth;
                 tb.style.width = '';
                 if (!natural) return;
-                let size = Math.min(body * 1.4, base * avail / natural * 0.92);
+                let size = Math.min(body * 1.8, base * avail / natural * 0.99);
                 if (size <= base) return;
+                // 폭은 글에 맞추고(빈 칸 없음) 글자를 키워 장 폭을 채운다
+                tb.style.width = 'auto';
                 tb.style.fontSize = size.toFixed(1) + 'px';
                 // 장 높이(720)를 넘으면 조금씩 줄인다
                 let guard = 0;
                 while (slide.scrollHeight > 720 && size > base && guard++ < 30) {
                     size -= 1; tb.style.fontSize = size.toFixed(1) + 'px';
                 }
-                if (size <= base) tb.style.fontSize = '';
+                if (size <= base) { tb.style.fontSize = ''; tb.style.width = ''; }
+                // 상한·높이에 걸려 폭을 다 못 채우면 장 폭 100% 로 되돌려 칸을 고르게 편다
+                else if (tb.offsetWidth < avail * 0.9) tb.style.width = '';
             });
         }
         const fitAll = s => { fitTables(s); fitCode(s); };
