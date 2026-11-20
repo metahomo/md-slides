@@ -17,7 +17,7 @@
             --r-heading-text-transform: none;
         }
         /* 16:9 (1280×720, Marp 기본과 같음) — 화면에 맞게 전체가 비율로 줄고 는다 */
-        .reveal .slides section { text-align: left; font-size: 0.9em; padding: 14px 22px !important; box-sizing: border-box; }
+        .reveal .slides section { text-align: left; font-size: 0.95em; padding: 14px 22px !important; box-sizing: border-box; }
         .reveal .slides section > :first-child { margin-top: 0; }
         /* 장표 경계 — 1280×720 캔버스에 테두리, 바깥은 옅은 회색 (2026-11-20 연구자 지시) */
         .reveal-viewport { background: #e2e8f0; }
@@ -27,9 +27,11 @@
         .reveal h1 { font-size: 1.9em; }
         .reveal h2 { font-size: 1.3em; margin-bottom: .3em; }
         .reveal h3 { font-size: 1.05em; }
-        .reveal table { font-size: 0.75em; }
+        /* 표는 장 폭을 다 쓴다 — 가운데 작은 표로 여백이 남던 것 (2026-11-20 연구자 지시) */
+        .reveal table { font-size: 0.85em; width: 100%; margin: .4em 0; }
+        .reveal section.dense table { font-size: 0.75em; } /* 긴 칸이 많은 표 — `<!-- _class: dense -->` */
         .reveal table th, .reveal table td { padding: .25em .6em; }
-        .reveal pre { font-size: .5em; width: 100%; box-shadow: none; }
+        .reveal pre { font-size: .55em; width: 100%; box-shadow: none; }
         .reveal ul ul, .reveal ol ol { font-size: .9em; }
         /* Marp `<!-- _class: lead -->` — 가운데 정렬 표지·절 구분 */
         .reveal section.lead { text-align: center; padding-top: 200px !important; } /* center: false 라서 lead 장만 아래로 내려 가운데처럼 */
@@ -91,6 +93,7 @@
             plugins: [RevealMarkdown, RevealHighlight, RevealNotes],
         });
     </script>
+
 </body>
 
 </html>
