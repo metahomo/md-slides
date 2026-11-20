@@ -60,6 +60,18 @@ paginate: true
 - 목록에 표시되는 제목은 파일에서 처음 나오는 `# 제목`입니다. 없으면 파일 이름을 씁니다.
 - 파일 이름은 영문, 숫자, `_`, `-`만 쓸 수 있습니다.
 
+### 더 쓸 수 있는 문법 (VS Code · nvim 미리 보기와 같은 MD)
+
+| 문법 | 슬라이드에서 |
+|---|---|
+| `<!-- _class: lead -->` | 그 장만 가운데 정렬 표지·절 구분. `invert`(밝은 글자), `hangul`(번호 목록 가·나·다), `small`(작은 글자). 여러 개는 띄어 쓴다 |
+| `<!-- _backgroundColor: #0f172a -->` · `<!-- _backgroundImage: url(…) -->` | 그 장의 배경 |
+| `> [!NOTE]` · `[!TIP]` · `[!IMPORTANT]` · `[!WARNING]` · `[!CAUTION]` | GitHub 알림 상자 |
+| ` ```javascript {1,2} ` | 1·2번 줄 강조(reveal.js `[1,2]` 로 바꿔 넣음) |
+| `<p class="fragment">` · `<div style="display:grid;…">` | 단계별 등장 · 2단 (`div` 안 MD 앞뒤 빈 줄) |
+
+화면은 16:9(1280×720)로 그리고 창 크기에 맞게 줄인다. 예시: [`decks/md-syntax-guide.md`](decks/md-syntax-guide.md)
+
 예시는 [`decks/sample-lecture.md`](decks/sample-lecture.md)와 [`decks/miniproject5-kms.md`](decks/miniproject5-kms.md)를 보세요.
 
 ## 설정 (환경 변수)

@@ -29,6 +29,9 @@ _SLUG = re.compile(r"^[\w-]+$")
 class Slide:
     body: str
     notes: str
+    cls: str = ""          # Marp `_class` / `class` 지시어 → <section class="…">
+    bg_color: str = ""     # Marp `_backgroundColor` → data-background-color
+    bg_image: str = ""     # Marp `_backgroundImage: url(…)` → data-background-image
 
 
 @dataclass
@@ -67,17 +70,47 @@ def _split_slides(text: str) -> list[str]:
     return [c for c in chunks if c.strip()]
 
 
+_SAFE_VALUE = re.compile(r"^[\w\s#(),.%:/-]+$")
+# GitHub 알림 문법 `> [!NOTE]` — VS Code·nvim 미리 보기와 같은 모양으로 슬라이드에도 그린다
+_ALERT = re.compile(r"^> \[!(NOTE|TIP|IMPORTANT|WARNING|CAUTION)\][ \t]*\n((?:>.*(?:\n|$))*)", re.MULTILINE)
+_ALERT_LABEL = {"NOTE": "ℹ️ Note", "TIP": "💡 Tip", "IMPORTANT": "❗ Important", "WARNING": "⚠️ Warning", "CAUTION": "🛑 Caution"}
+# 코드 줄 강조 ```js {1,3-4}  →  reveal.js 문법 ```js [1,3-4]
+_CODE_LINES = re.compile(r"^(```[\w+-]+)[ \t]*\{([\d,\s|-]+)\}[ \t]*$", re.MULTILINE)
+
+
+def _alerts(body: str) -> str:
+    def to_html(m: re.Match) -> str:
+        kind = m.group(1)
+        inner = "\n".join(line[1:].lstrip() if line.startswith(">") else line for line in m.group(2).rstrip("\n").splitlines())
+        return (f'<div class="callout callout-{kind.lower()}">\n<p class="callout-title">{_ALERT_LABEL[kind]}</p>\n\n'
+                f"{inner.strip()}\n\n</div>\n")
+    return _ALERT.sub(to_html, body)
+
+
+def _code_lines(body: str) -> str:
+    return _CODE_LINES.sub(lambda m: f"{m.group(1)} [{m.group(2).replace(' ', '')}]", body)
+
+
 def _extract_notes(chunk: str) -> Slide:
-    notes = []
+    notes, directives = [], {}
 
     def take(match: re.Match) -> str:
         inner = match.group(1).strip()
-        if inner and not _DIRECTIVE.match(inner):
+        if not inner:
+            return ""
+        if _DIRECTIVE.match(inner):
+            key, _, value = inner.partition(":")
+            directives[key.strip().lstrip("_")] = value.strip().strip("'\"")
+        else:
             notes.append(inner)
         return ""
 
     body = _COMMENT.sub(take, chunk).strip()
-    return Slide(body=body, notes="\n\n".join(notes))
+    body = _code_lines(_alerts(body))
+    safe = lambda v: v if v and _SAFE_VALUE.match(v) else ""
+    image = re.sub(r"^url\((.*)\)$", r"\1", directives.get("backgroundImage", "")).strip("'\"")
+    return Slide(body=body, notes="\n\n".join(notes), cls=safe(directives.get("class", "")),
+                 bg_color=safe(directives.get("backgroundColor", "")), bg_image=safe(image))
 
 
 def _title(slides: list[Slide], fallback: str) -> str:

@@ -4,19 +4,11 @@ paginate: true
 ---
 
 <!-- _class: lead -->
-<style>
-.reveal h1{font-size:1.6em}
-.reveal h2{font-size:1.05em;margin-bottom:.2em}
-.reveal h3{font-size:.8em;font-weight:500}
-.reveal .slides section{font-size:.95em}
-.reveal pre{font-size:.42em;width:100%}
-.reveal table th,.reveal table td{padding:.25em .5em}
-</style>
-<div style="text-align:center;margin-top:2em">
-<h1>미니 프로젝트 5</h1>
-<h3>KMS 논문 판정기 — ML 시스템 클라우드 배포</h3>
-<p style="color:#64748b;font-size:.7em">GPU 없는 서버에서 LLM의 판단을 싸게 서빙하고,<br>검증을 통과한 것만 운영에 들인다 · 2026-11</p>
-</div>
+# 미니 프로젝트 5
+
+### KMS 논문 판정기 — ML 시스템 클라우드 배포
+
+GPU 없는 서버에서 LLM의 판단을 싸게 서빙하고, 검증을 통과한 것만 운영에 들인다 · 2026-11
 
 <!-- 부제 한 줄이 발표 전체의 결론이다. 순서: 1 아키텍처 이유와 Flow(필수) → 2 AI 활용(필수) → 3 강의 대비 개선점(옵션) → 4 AI에게 서비스(옵션). 도메인은 짧게, 기술 선택의 이유에 시간을 쓴다. -->
 
@@ -42,10 +34,7 @@ paginate: true
 ---
 
 <!-- _class: lead -->
-<div style="text-align:center;margin-top:1.5em">
-<p style="font-size:1.8em;color:#94a3b8;margin:0">1</p>
-<h2>아키텍처 설계의 이유와 Flow</h2>
-</div>
+# 1. 아키텍처 설계의 이유와 Flow
 
 <!-- 절 구분 장. -->
 
@@ -53,7 +42,7 @@ paginate: true
 
 ## 문제와 해법
 
-<p style="color:#64748b;font-size:.65em">GPU가 없어서, LLM을 교사로 두고 CPU 학생 모델을 배포했다</p>
+*GPU가 없어서, LLM을 교사로 두고 CPU 학생 모델을 배포했다*
 
 <div style="font-size:.75em">
 
@@ -69,7 +58,7 @@ paginate: true
 
 ## 전체 흐름 — 판은 둘
 
-<p style="color:#64748b;font-size:.65em">코드와 모델은 다른 길로, 각자 검증을 거쳐서만 운영에 들어간다</p>
+*코드와 모델은 다른 길로, 각자 검증을 거쳐서만 운영에 들어간다*
 
 ```text
 [코드 판]  PR / v* 태그 → ci: pytest → 이미지(GHCR) → 서버 교체 → /health
@@ -88,7 +77,7 @@ paginate: true
 
 ## 기술 선택의 이유
 
-<p style="color:#64748b;font-size:.65em">CPU로 싸게 · 배포되는 그 이미지로 · 규칙은 DB가</p>
+*CPU로 싸게 · 배포되는 그 이미지로 · 규칙은 DB가*
 
 <div style="font-size:.6em">
 
@@ -108,7 +97,7 @@ paginate: true
 
 ## 데이터 — 원문 없이 공개
 
-<p style="color:#64748b;font-size:.65em">공개 저장소에 올려도 학습은 그대로 재현된다</p>
+*공개 저장소에 올려도 학습은 그대로 재현된다*
 
 <div style="display:grid;grid-template-columns:1fr 1fr;gap:1em;font-size:.65em">
 <div>
@@ -137,7 +126,7 @@ paginate: true
 
 ## 시연 ① 코드 → 배포
 
-<p style="color:#64748b;font-size:.65em">시험을 통과한 코드만 서버로 간다</p>
+*시험을 통과한 코드만 서버로 간다*
 
 ```text
 PR · main → ci test(pytest) → 통과해야 image
@@ -160,7 +149,7 @@ PR · main → ci test(pytest) → 통과해야 image
 
 ## 시연 ② 게이트 — 셋
 
-<p style="color:#64748b;font-size:.65em">하한 하나로는 약한 모델을 못 거른다</p>
+*하한 하나로는 약한 모델을 못 거른다*
 
 <div style="font-size:.7em">
 
@@ -178,7 +167,7 @@ PR · main → ci test(pytest) → 통과해야 image
 
 ## 시연 ② 검증이 실제로 막았다
 
-<p style="color:#64748b;font-size:.65em">F1 0.9021 — 하한은 넘었지만 기준선 조건에서 멈췄다</p>
+*F1 0.9021 — 하한은 넘었지만 기준선 조건에서 멈췄다*
 
 <div style="font-size:.65em">
 
@@ -197,7 +186,7 @@ PR · main → ci test(pytest) → 통과해야 image
 
 ## parity — 배포되는 그 이미지로
 
-<p style="color:#64748b;font-size:.65em">원본과 같은 답을 해야 승격된다 (허용 1e-5)</p>
+*원본과 같은 답을 해야 승격된다 (허용 1e-5)*
 
 <div style="font-size:.65em">
 
@@ -215,7 +204,7 @@ PR · main → ci test(pytest) → 통과해야 image
 
 ## 시연 ③ 승격
 
-<p style="color:#64748b;font-size:.65em">통과한 판만 올라가고, 미통과 판은 DB가 거부한다</p>
+*통과한 판만 올라가고, 미통과 판은 DB가 거부한다*
 
 <div style="font-size:.6em">
 
@@ -236,7 +225,7 @@ PR · main → ci test(pytest) → 통과해야 image
 
 ## 새 데이터가 들어오면 — 사람 손 없이
 
-<p style="color:#64748b;font-size:.65em">R3의 실제 흐름: KMS가 모은 새 논문 7편으로 자동 재학습</p>
+*R3의 실제 흐름: KMS가 모은 새 논문 7편으로 자동 재학습*
 
 ```text
 KMS 수집 새 논문 7편 → 교사 라벨(include 6 · exclude 1) → 스냅숏 PR
@@ -252,7 +241,7 @@ KMS 수집 새 논문 7편 → 교사 라벨(include 6 · exclude 1) → 스냅�
 
 ## 시연 ④ 롤백
 
-<p style="color:#64748b;font-size:.65em">되돌렸다가 다시 앞으로 — 매번 <code>/health</code>가 일치했다</p>
+*되돌렸다가 다시 앞으로 — 매번 <code>/health</code>가 일치했다*
 
 <div style="font-size:.6em">
 
@@ -304,10 +293,7 @@ KMS 수집 새 논문 7편 → 교사 라벨(include 6 · exclude 1) → 스냅�
 ---
 
 <!-- _class: lead -->
-<div style="text-align:center;margin-top:1.5em">
-<p style="font-size:1.8em;color:#94a3b8;margin:0">2</p>
-<h2>AI 활용</h2>
-</div>
+# 2. AI 활용
 
 <!-- 절 구분 장. -->
 
@@ -363,10 +349,7 @@ KMS 수집 새 논문 7편 → 교사 라벨(include 6 · exclude 1) → 스냅�
 ---
 
 <!-- _class: lead -->
-<div style="text-align:center;margin-top:1.5em">
-<p style="font-size:1.8em;color:#94a3b8;margin:0">3</p>
-<h2>강의 대비 개선점</h2>
-</div>
+# 3. 강의 대비 개선점
 
 <!-- 절 구분 장. 시간이 부족하면 증류, 게이트 셋, parity 실사례 세 개만 말한다. -->
 
@@ -409,10 +392,7 @@ KMS 수집 새 논문 7편 → 교사 라벨(include 6 · exclude 1) → 스냅�
 ---
 
 <!-- _class: lead -->
-<div style="text-align:center;margin-top:1.5em">
-<p style="font-size:1.8em;color:#94a3b8;margin:0">4</p>
-<h2>AI에게 서비스 제공하기</h2>
-</div>
+# 4. AI에게 서비스 제공하기
 
 <!-- 절 구분 장. -->
 
@@ -442,11 +422,10 @@ KMS 수집 새 논문 7편 → 교사 라벨(include 6 · exclude 1) → 스냅�
 ---
 
 <!-- _class: lead -->
-<div style="text-align:center;margin-top:1em">
-<h2>정리</h2>
+# 정리
+
 <p style="font-size:.8em">검증을 통과한 것만 운영에 들어갔고,<br><b>실제로 돌았다</b></p>
 <p class="fragment" style="font-size:.6em;color:#64748b">코드 변경 → 배포 · 데이터 변경 → 학습·게이트 → 승격 → 롤백</p>
 <p class="fragment" style="font-size:.7em">감사합니다</p>
-</div>
 
 <!-- 마무리에서 시연 흐름 한 줄을 다시 읽는다. -->

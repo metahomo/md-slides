@@ -4,7 +4,7 @@ from pathlib import Path
 
 from django.test import SimpleTestCase, override_settings
 
-from slides.decks import load_deck
+from slides.decks import _extract_notes, load_deck
 
 DECK = """---
 marp: true
@@ -93,3 +93,27 @@ class SlidesTest(SimpleTestCase):
     def test_missing_or_invalid_slug_is_404(self):
         for url in ["/nope/", "/secret/", "/..%2Fsecret/"]:
             self.assertEqual(self.client.get(url).status_code, 404, url)
+
+
+class MarkdownExtrasTests(SimpleTestCase):
+    """화이트보드 문법: Marp 지시어(_class 등), GitHub 알림, 코드 줄 강조."""
+
+    def test_marp_class_and_background_directives_apply_to_slide(self):
+        s = _extract_notes("<!-- _class: lead -->\n<!-- _backgroundColor: #123456 -->\n# 표지\n<!-- 발표자 노트 -->")
+        self.assertEqual((s.cls, s.bg_color), ("lead", "#123456"))
+        self.assertEqual(s.notes, "발표자 노트")
+        self.assertNotIn("_class", s.body)
+
+    def test_unsafe_directive_value_is_dropped(self):
+        s = _extract_notes('<!-- _class: x" onclick="alert(1) -->\n# t')
+        self.assertEqual(s.cls, "")
+
+    def test_github_alert_becomes_callout(self):
+        s = _extract_notes("> [!NOTE]\n> VS Code 와 nvim 에서도 보인다\n> 둘째 줄\n\n뒤 문단")
+        self.assertIn('<div class="callout callout-note">', s.body)
+        self.assertIn("VS Code 와 nvim 에서도 보인다\n둘째 줄", s.body)
+        self.assertIn("뒤 문단", s.body)
+
+    def test_code_line_highlight_braces_to_reveal_brackets(self):
+        s = _extract_notes("```javascript {1,2}\nimport os\n```")
+        self.assertTrue(s.body.startswith("```javascript [1,2]"))

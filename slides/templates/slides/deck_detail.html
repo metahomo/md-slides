@@ -16,8 +16,36 @@
             --r-main-font-size: 34px;
             --r-heading-text-transform: none;
         }
-        .reveal .slides section { text-align: left; }
-        .reveal table { font-size: 0.8em; }
+        /* 16:9 (1280×720, Marp 기본과 같음) — 화면에 맞게 전체가 비율로 줄고 는다 */
+        .reveal .slides section { text-align: left; font-size: 0.8em; }
+        .reveal h1 { font-size: 1.9em; }
+        .reveal h2 { font-size: 1.3em; margin-bottom: .3em; }
+        .reveal h3 { font-size: 1.05em; }
+        .reveal table { font-size: 0.75em; }
+        .reveal table th, .reveal table td { padding: .25em .6em; }
+        .reveal pre { font-size: .5em; width: 100%; box-shadow: none; }
+        .reveal ul ul, .reveal ol ol { font-size: .9em; }
+        /* Marp `<!-- _class: lead -->` — 가운데 정렬 표지·절 구분 */
+        .reveal section.lead { text-align: center; } /* 세로 가운데는 reveal 기본(center: true) */
+        .reveal section.lead h1 { font-size: 2.4em; }
+        .reveal section.lead h2 { font-size: 1.6em; }
+        .reveal section.lead p { color: #64748b; }
+        /* Marp `<!-- _class: invert -->` */
+        .reveal section.invert { color: #f8fafc; }
+        /* `<!-- _class: hangul -->` — 번호 목록을 가, 나, 다로 */
+        .reveal section.hangul ol { list-style-type: korean-hangul-formal; }
+        .reveal section.hangul ol { list-style-type: hangul; }
+        /* `<!-- _class: small -->` — 글이 많은 장 */
+        .reveal section.small { font-size: .65em; }
+        /* GitHub 알림 > [!NOTE] … (VS Code·nvim 미리 보기와 같은 색) */
+        .reveal .callout { border-left: .25em solid; padding: .3em .8em; margin: .5em 0; border-radius: .2em; font-size: .85em; }
+        .reveal .callout p { margin: .2em 0; }
+        .reveal .callout-title { font-weight: 700; }
+        .reveal .callout-note { border-color: #0969da; background: #ddf4ff; }
+        .reveal .callout-tip { border-color: #1a7f37; background: #dafbe1; }
+        .reveal .callout-important { border-color: #8250df; background: #fbefff; }
+        .reveal .callout-warning { border-color: #9a6700; background: #fff8c5; }
+        .reveal .callout-caution { border-color: #cf222e; background: #ffebe9; }
         .back { position: fixed; top: 12px; left: 16px; z-index: 30; font: 14px var(--r-main-font); color: #64748b; text-decoration: none; }
     </style>
 </head>
@@ -28,7 +56,7 @@
         <div class="slides">
             {% for slide in deck.slides %}
             {# textarea 안의 MD는 자동 이스케이프되고, reveal.js가 원래 문자열로 읽어 렌더링한다. #}
-            <section data-markdown data-separator="^\r?\n<<<slide>>>\r?\n$" data-separator-notes="^<<<notes>>>$">
+            <section data-markdown data-separator="^\r?\n<<<slide>>>\r?\n$" data-separator-notes="^<<<notes>>>$"{% if slide.cls %} class="{{ slide.cls }}"{% endif %}{% if slide.bg_color %} data-background-color="{{ slide.bg_color }}"{% endif %}{% if slide.bg_image %} data-background-image="{{ slide.bg_image }}"{% endif %}>
                 <textarea data-template>
 {{ slide.body }}
 {% if slide.notes %}
@@ -48,6 +76,9 @@
         Reveal.initialize({
             hash: true,
             slideNumber: "c/t",
+            width: 1280,
+            height: 720,
+            margin: 0.06,
             plugins: [RevealMarkdown, RevealHighlight, RevealNotes],
         });
     </script>
