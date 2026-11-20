@@ -21,7 +21,9 @@
         .reveal .slides section > :first-child { margin-top: 0; }
         /* 장표 경계 — 1280×720 캔버스에 테두리, 바깥은 옅은 회색 (2026-11-20 연구자 지시) */
         .reveal-viewport { background: #e2e8f0; }
-        .reveal .slides { background: #fff; outline: 2px solid #94a3b8; box-shadow: 0 2px 12px rgba(15,23,42,.15); }
+        .reveal .slides { background: #fff; box-shadow: 0 2px 12px rgba(15,23,42,.15); }
+        /* 검은 네모 테두리 — 캔버스 안쪽 끝에 그려 창 끝에서 잘리지 않게 (2026-11-20 연구자 지시) */
+        .reveal .slides::after { content: ""; position: absolute; inset: 0; border: 3px solid #000; pointer-events: none; z-index: 50; }
         .reveal h1 { font-size: 1.9em; }
         .reveal h2 { font-size: 1.3em; margin-bottom: .3em; }
         .reveal h3 { font-size: 1.05em; }
