@@ -4,8 +4,16 @@ paginate: true
 ---
 
 <!-- _class: lead -->
-<div style="text-align:center">
-<h1 class="r-fit-text">미니 프로젝트 5</h1>
+<style>
+.reveal h1{font-size:1.6em}
+.reveal h2{font-size:1.05em;margin-bottom:.2em}
+.reveal h3{font-size:.8em;font-weight:500}
+.reveal .slides section{font-size:.95em}
+.reveal pre{font-size:.42em;width:100%}
+.reveal table th,.reveal table td{padding:.25em .5em}
+</style>
+<div style="text-align:center;margin-top:2em">
+<h1>미니 프로젝트 5</h1>
 <h3>KMS 논문 판정기 — ML 시스템 클라우드 배포</h3>
 <p style="color:#64748b;font-size:.7em">GPU 없는 서버에서 LLM의 판단을 싸게 서빙하고,<br>검증을 통과한 것만 운영에 들인다 · 2026-11</p>
 </div>
@@ -35,7 +43,7 @@ paginate: true
 
 <!-- _class: lead -->
 <div style="text-align:center;margin-top:1.5em">
-<p style="font-size:2.6em;color:#94a3b8;margin:0">1</p>
+<p style="font-size:1.8em;color:#94a3b8;margin:0">1</p>
 <h2>아키텍처 설계의 이유와 Flow</h2>
 </div>
 
@@ -297,7 +305,7 @@ KMS 수집 새 논문 7편 → 교사 라벨(include 6 · exclude 1) → 스냅�
 
 <!-- _class: lead -->
 <div style="text-align:center;margin-top:1.5em">
-<p style="font-size:2.6em;color:#94a3b8;margin:0">2</p>
+<p style="font-size:1.8em;color:#94a3b8;margin:0">2</p>
 <h2>AI 활용</h2>
 </div>
 
@@ -356,7 +364,7 @@ KMS 수집 새 논문 7편 → 교사 라벨(include 6 · exclude 1) → 스냅�
 
 <!-- _class: lead -->
 <div style="text-align:center;margin-top:1.5em">
-<p style="font-size:2.6em;color:#94a3b8;margin:0">3</p>
+<p style="font-size:1.8em;color:#94a3b8;margin:0">3</p>
 <h2>강의 대비 개선점</h2>
 </div>
 
@@ -402,7 +410,7 @@ KMS 수집 새 논문 7편 → 교사 라벨(include 6 · exclude 1) → 스냅�
 
 <!-- _class: lead -->
 <div style="text-align:center;margin-top:1.5em">
-<p style="font-size:2.6em;color:#94a3b8;margin:0">4</p>
+<p style="font-size:1.8em;color:#94a3b8;margin:0">4</p>
 <h2>AI에게 서비스 제공하기</h2>
 </div>
 
