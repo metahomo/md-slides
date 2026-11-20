@@ -128,16 +128,17 @@ PR · main → ci test(pytest) → 통과해야 image
 
 ## 태그마다 한 겹씩 더했다
 
-*v0.1.1 첫 자동 배포 → 지금 운영은 v0.1.4*
+*v0.1.1 첫 자동 배포 → 지금 운영은 v0.1.5*
 
 | 태그 | 바뀐 것 |
 |---|---|
 | v0.1.1 | 작업용 서버 첫 자동 배포 (릴리스) |
 | v0.1.2 | 예측 로그 — 원문 없이 해시·점수만 장부에 |
 | v0.1.3 | 공개 API 보호 — 토큰 401/200, 분당 60 초과 429 |
-| **v0.1.4** | 원격 MCP `POST /mcp` (릴리스) |
+| v0.1.4 | 원격 MCP `POST /mcp` (릴리스) |
+| **v0.1.5** | 입력 검증 버그 3건 · 시험 32→87 (릴리스) |
 
-<!-- 릴리스는 v0.1.1 · v0.1.4 두 개(v0.1.4 릴리스에 v0.1.2~0.1.4 묶음: 예측 로그·API 보호·원격 MCP·자동 복귀 보강·복구 훈련·스킬). 증거: v0.1.1 https://github.com/metahomo/miniproject5_kms/actions/runs/44513840582 · v0.1.4 https://github.com/metahomo/miniproject5_kms/actions/runs/44543294166 -->
+<!-- 릴리스는 v0.1.1 · v0.1.4 · v0.1.5 (v0.1.5 = PR #54·#55, 11-20; v0.1.4 릴리스에 v0.1.2~0.1.4 묶음: 예측 로그·API 보호·원격 MCP·자동 복귀 보강·복구 훈련·스킬). 증거: v0.1.1 https://github.com/metahomo/miniproject5_kms/actions/runs/44513840582 · v0.1.4 https://github.com/metahomo/miniproject5_kms/actions/runs/44543294166 -->
 
 ---
 
@@ -253,9 +254,9 @@ KMS 수집 새 논문 7편 → 교사 라벨(include 6 · exclude 1) → 스냅�
 | 항목 | 지금 |
 |---|---|
 | 주소 | `https://54-252-22-31.sslip.io` |
-| 판 | app **v0.1.4** · model **m20261120-17** (F1 0.9609 · parity 5.5e-7) |
+| 판 | app **v0.1.5** · model **m20261120-17** (F1 0.9609 · parity 5.5e-7) |
 | 보호 | 토큰 · 분당 60 · 보안 헤더(HSTS · nosniff · no-referrer) |
-| 릴리스 | v0.1.1 · v0.1.4 |
+| 릴리스 | v0.1.1 · v0.1.4 · v0.1.5 |
 | 보드 | Done **13/16** |
 
 <!-- 보안 헤더는 Caddy(PR #41), Server 헤더도 숨김. 자원 정리는 runbooks/teardown.md. -->
