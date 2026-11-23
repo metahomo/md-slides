@@ -450,6 +450,22 @@ rollback  rollback(작업용) · rollback-final(최종, 서버에 남은 판으�
 
 ---
 
+## 보고서 도우미 LLM — 웹에서 근거 인용 보고서를 쓴다
+
+*KMS 웹 "연구 보고서" 화면 `/research-reports` · 공용 Ollama*
+
+| 역할 | 모델 | 하는 일 |
+|---|---|---|
+| 보고서 작성 | **qwen3:4b-instruct-2507** (4B · Q4_K_M) | 근거 30편 묶음 요약 → 절마다 문장 + 인용 |
+| 근거 찾기 | **bge-m3** (임베딩) | 질문에 맞는 논문을 의미 검색 |
+| 참고문헌 | (모델 안 씀) | DB 서지 값만 — LLM이 지어내지 않음 |
+
+<p class="fragment"><b>실제 생성</b>: 볼트에 5편 · 11-21 14:42 보고서 66초 · 인용 <b>27 / 30</b></p>
+
+<!-- 확인(11-23): 웹 /api/llm/status 가 generation_model = qwen3:4b-instruct-2507-q4_K_M, embedding_model = bge-m3 로 응답. 보고서 파일 머리 model 값도 같은 모델. 서비스용 paperclf 학생 모델과 달리 이쪽은 LLM 이 직접 글을 쓴다 — 대신 문장마다 인용을 강제하고 참고문헌은 DB 에서만 가져온다. -->
+
+---
+
 <!-- _class: lead -->
 # 정리
 

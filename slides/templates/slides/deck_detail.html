@@ -65,6 +65,7 @@
         .theme-orange { --accent: #d1450e; --ink: #1f1f1f; --text: #333; --muted: #777; }
         .theme-orange .reveal { --r-main-font: "Pretendard Variable", Pretendard, "Apple SD Gothic Neo", "Malgun Gothic", sans-serif; --r-heading-font: var(--r-main-font); --r-main-color: var(--text); --r-heading-color: var(--ink); --r-link-color: var(--accent); }
         .theme-orange .reveal-viewport { background: #f2f2f4; }
+        .theme-orange .reveal .slides { word-break: keep-all; overflow-wrap: break-word; }  /* 한글은 낱말 단위로 줄바꿈 — 표 칸에서 '작 성'처럼 끊기던 것 */
         .theme-orange .reveal .slides { border-radius: 8px; box-shadow: 0 1px 10px rgba(0,0,0,.10); }
         .theme-orange .reveal .slides::after { display: none; }   /* 검은 네모 대신 그림자 */
         .theme-orange .reveal .slides > section { padding: 52px 88px 70px !important; height: 720px; }
