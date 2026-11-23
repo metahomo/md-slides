@@ -3,6 +3,7 @@ marp: true
 paginate: true
 theme: orange
 footer: 미니 프로젝트 5 · KMS 논문 보고서 작성기
+logos: assets/logo-1-moel.png, assets/logo-2-abc.png, assets/logo-3-euclid.png
 ---
 
 <!-- _class: lead cover -->
