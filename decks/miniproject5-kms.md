@@ -71,13 +71,13 @@ logos: assets/logo-1-moel.png, assets/logo-2-abc.png, assets/logo-3-euclid.png
 
 <!-- _class: dense -->
 
-## CPU로 싸게 · 배포되는 그 이미지로 · 규칙은 DB가
+## CPU로 효율적으로 · 배포되는 그 이미지로 · 규칙은 DB가
 
 *기술 선택의 이유*
 
 | 구성 요소 | 선택 | 이유 |
 |---|---|---|
-| 학생 모델 | 해싱 글자 n-gram → TF-IDF → 로지스틱 회귀 | CPU만으로 싸고 빠르게 |
+| 학생 모델 | 해싱 글자 n-gram → TF-IDF → 로지스틱 회귀 | CPU만으로 비용 효율적·빠르게 |
 | 서빙 | FastAPI + onnxruntime 컨테이너 1종 | 그 이미지로 parity 검사 |
 | 학습 위치 | GitHub-hosted runner | 서버는 서빙·승격만 |
 | ledger | PostgreSQL + 트리거 | 미통과 version 배포를 DB가 거부 |
