@@ -381,6 +381,44 @@ rollback  rollback(작업용) · rollback-final(최종, 서버에 남은 version
 
 ---
 
+<!-- _class: dense -->
+
+## MLOps 틀은 강의 그대로, 모델만 바꿨다
+
+*목표 — MLOps를 이해하고, 세팅하고, 이유를 설명한다*
+
+| 단계 | 강의 | 이 프로젝트 | 변경 |
+|---|---|---|---|
+| 데이터 | 합성 데이터 | KMS 논문 snapshot · LLM 라벨 | 입력 |
+| 학습 | 강의 예제 모델 | 해싱 n-gram + 로지스틱 회귀 | **모델** |
+| 검증 | 게이트 · parity | 같음 (게이트 조건 셋) | 기준 |
+| 배포 | ONNX → 이미지 → Lightsail | 같음 | 없음 |
+| 롤백 | 이전 version · 모델 카드 | 같음 + ledger | 없음 |
+
+<p class="fragment">모델을 바꿔도 <b>파이프라인은 그대로</b> — 그래서 각 단계의 이유를 설명할 수 있다</p>
+
+<!-- 교수님 요구: "MLOps를 이해하고, 세팅하고, 이유를 설명할 수 있음이 목표. 강의 내용에서 ML 모델만 변경해도 충분." 이 장이 그 답이다. 강의 예제 모델 이름은 말하지 않고 "강의 예제"로 둔다. -->
+
+---
+
+<!-- _class: dense -->
+
+## 모델을 바꾸면 어디가 바뀌나 — 그리고 왜 그대로인가
+
+*model.yml: train → validate → export → card → parity → promote*
+
+| 바꾸는 곳 | 그대로인 곳 | 그대로여야 하는 이유 |
+|---|---|---|
+| `train.py` (모델) | 게이트 (`validate_model`) | 어떤 모델이든 **약한 모델은 막는다** |
+| `features.py` (특징) | parity (`check_parity`) | 변환 뒤에도 **같은 답**이어야 서빙 |
+| ONNX 변환 옵션 | promote · rollback · ledger | 운영 교체와 되돌림은 **모델과 무관** |
+
+<p class="fragment">예: 보고서 근거 선택 모델도 <b>이 틀에 그대로</b> 태울 수 있다</p>
+
+<!-- 확인(11-23): .github/workflows/model.yml 의 step 은 python -m training.train / validate_model / export_onnx / model_card / check_parity 와 deploy/lightsail 스크립트·ledger.py 로 모델 종류와 무관하다. 모델 정의는 training/train.py(sklearn Pipeline: TfidfTransformer + LogisticRegression), 특징은 paperclf/features.py. -->
+
+---
+
 ## 강의 뼈대는 그대로, 검증이 실제로 막게
 
 *데이터 · 게이트 · 서빙 · ledger · 실행 시점*
