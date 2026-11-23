@@ -25,7 +25,7 @@ footer: 미니 프로젝트 5 · KMS 논문 보고서 작성기
 | 3. 강의 대비 개선점 (옵션) | 강의보다 무엇을 더 했나 |
 | 4. AI에게 서비스 (옵션) | AI가 쓴다면 어떻게 내놓나 |
 
-<p class="fragment"><b>시연은 한 줄</b>: 코드 변경 → 배포 · 데이터 변경 → 학습·게이트 → 승격 → 롤백</p>
+<p><b>시연은 한 줄</b>: 코드 변경 → 배포 · 데이터 변경 → 학습·게이트 → 승격 → 롤백</p>
 
 <!-- 과제의 다섯 기능(R1~R5): Lightsail · GitHub CI/CD · 자동 학습과 검증 · 모델 API 배포 · 롤백. 시연은 이 흐름 하나로 묶는다. 시연 대본: presentation/05-demo-script.md -->
 
@@ -108,7 +108,7 @@ footer: 미니 프로젝트 5 · KMS 논문 보고서 작성기
 </div>
 </div>
 
-<p class="fragment">첫 snapshot <b>867편</b> — include 641 · exclude 211 · uncertain 15 · 11-20 새 7편 더해 874편</p>
+<p>첫 snapshot <b>867편</b> — include 641 · exclude 211 · uncertain 15 · 11-20 새 7편 더해 874편</p>
 
 <!-- ADR-005. 분할: 열쇠 해시 % 5 == 0 → 게이트 시험지(약 20%, 178편). 새 데이터가 와도 기존 논문의 분할은 바뀌지 않는다. 대안이었던 원문 저장은 저작권, 식별자만 두고 학습 때 API 로 다시 받기는 재현성 때문에 버렸다. -->
 
@@ -152,7 +152,7 @@ PR · main → ci test(pytest) → 통과해야 image
 2. F1 ≥ **기준선 + 0.05** — "전부 include"만 답해도 F1 0.8805
 3. 운영 모델보다 **0.02** 넘게 떨어지지 않을 것
 
-<p class="fragment">test set = 교사 라벨 고정 20% (178편)</p>
+<p>test set = 교사 라벨 고정 20% (178편)</p>
 
 <!-- ADR-006. 기준선은 데이터마다 다시 잰다 — 11-19 0.8805, 새 7편을 더한 11-20 0.882. 하이퍼파라미터 C 를 게이트 시험지로 고르면 시험지에 과적합하므로 미리 정한 4를 유지했다. -->
 
@@ -182,7 +182,7 @@ PR · main → ci test(pytest) → 통과해야 image
 - 잡은 문제: `sublinear_tf=True` → 변환 뒤 **0.0018** 어긋남 → 끄고 4.4e-9
 - 허용치를 1e-12로 좁히면 parity에서 멈추고 승격 건너뜀 (m20261119-12)
 
-<p class="fragment">변환기 옵션 하나로 모델이 달라진다 → 학습 직후와 이미지, 두 곳에서 본다</p>
+<p>변환기 옵션 하나로 모델이 달라진다 → 학습 직후와 이미지, 두 곳에서 본다</p>
 
 <!-- float32 입력도 오차가 커서 ONNX 입력을 double 로 했다. 최신 판 = m20261120-24(11-20 최종 서버 개통 때 같은 데이터로 재학습, F1 0.9609 · parity 4.1e-7). 새 데이터 판은 m20261120-17(PR #44). parity 차단 실행: https://github.com/metahomo/miniproject5_kms/actions/runs/44519475156 -->
 
@@ -202,7 +202,7 @@ PR · main → ci test(pytest) → 통과해야 image
 | m20261120-17 (새 데이터) | 통과 | 통과 | 승격 |
 | **m20261120-24** (최종 서버 개통) | 통과 | 통과 | **승격 — 두 서버 운영** |
 
-<p class="fragment">ledger 트리거: <code>ERROR: model m20261119-9 has not passed gate and parity</code></p>
+<p>ledger 트리거가 m20261119-9 거부: <code>has not passed gate and parity</code></p>
 
 <!-- 정본은 운영 장부 DB model_versions, 사본은 experiments/. 버킷 paperclf-models-apse2(키 없이 리소스 액세스). 증거: 승격 →7 https://github.com/metahomo/miniproject5_kms/actions/runs/44514427871 · →11 https://github.com/metahomo/miniproject5_kms/actions/runs/44519470540 -->
 
@@ -274,7 +274,7 @@ KMS 수집 새 논문 7편 → 교사 라벨(include 6 · exclude 1) → snapsho
 - ledger 백업: 승격·롤백 직후 + 매일
 - 백업 **restore drill** 통과 — 건수 · 운영 version · 트리거 일치
 
-<p class="fragment">남은 것: 22번 닫기·정리(#1·#8), 마감·발표(#11)</p>
+<p>남은 것: 22번 닫기·정리(#1·#8), 마감·발표(#11)</p>
 
 <!-- uptime PR #42(첫 실행 성공). 복구 훈련: 버킷 최신 덤프 → 임시 DB, 건수·운영 판·트리거 일치(PR #37) — 복원해 보니 API 계정이 없어 권한 줄이 실패하는 것을 찾아 절차에 선생성을 넣었다. -->
 
@@ -350,11 +350,13 @@ rollback  rollback(작업용) · rollback-final(최종, 서버에 남은 version
 </div>
 </div>
 
-<p class="fragment">지침 두 겹: <b>사령관</b>(<code>CLAUDE.md</code>) · <b>부관</b>(<code>AGENTS.md</code>), 위임 지시서 5요소</p>
+<p>지침 두 겹: <b>사령관</b>(<code>CLAUDE.md</code>) · <b>부관</b>(<code>AGENTS.md</code>), 위임 지시서 5요소</p>
 
 <!-- 사령관(Claude 메인 세션)이 부관(서브에이전트)을 병렬로 지휘했다. ai-usage/ 9건. -->
 
 ---
+
+<!-- _class: dense -->
 
 ## AI의 설명이 아니라 증거로 받았다
 
@@ -368,7 +370,7 @@ rollback  rollback(작업용) · rollback-final(최종, 서버에 남은 version
 | ledger | 운영 DB 트리거가 미통과 version 거부 |
 | 보호 | 실제 요청으로 401 · 200 · 429 |
 
-<p class="fragment">작업마다 <b>AI 활용 기록</b>(<code>ai-usage/</code>) 한 건 — 9건</p>
+<p>작업마다 <b>AI 활용 기록</b>(<code>ai-usage/</code>) 한 건 — 9건</p>
 
 <!-- AI 가 실수한 예: sublinear_tf=True 로 ONNX 가 0.0018 어긋남 → parity 로 잡았다. 각 AI 활용 기록의 "연구자 검수" 칸은 발표 전에 연구자가 채운다. -->
 
@@ -395,7 +397,7 @@ rollback  rollback(작업용) · rollback-final(최종, 서버에 남은 version
 | 배포 | ONNX → 이미지 → Lightsail | 같음 | 없음 |
 | 롤백 | 이전 version · 모델 카드 | 같음 + ledger | 없음 |
 
-<p class="fragment">모델을 바꿔도 <b>파이프라인은 그대로</b> — 그래서 각 단계의 이유를 설명할 수 있다</p>
+<p>모델을 바꿔도 <b>파이프라인은 그대로</b> — 그래서 각 단계의 이유를 설명할 수 있다</p>
 
 <!-- 교수님 요구: "MLOps를 이해하고, 세팅하고, 이유를 설명할 수 있음이 목표. 강의 내용에서 ML 모델만 변경해도 충분." 이 장이 그 답이다. 강의 예제 모델 이름은 말하지 않고 "강의 예제"로 둔다. -->
 
@@ -413,7 +415,7 @@ rollback  rollback(작업용) · rollback-final(최종, 서버에 남은 version
 | `features.py` (특징) | parity (`check_parity`) | 변환 뒤에도 **같은 답**이어야 서빙 |
 | ONNX 변환 옵션 | promote · rollback · ledger | 운영 교체와 되돌림은 **모델과 무관** |
 
-<p class="fragment">예: 보고서 근거 선택 모델도 <b>이 틀에 그대로</b> 태울 수 있다</p>
+<p>예: 보고서 근거 선택 모델도 <b>이 틀에 그대로</b> 태울 수 있다</p>
 
 <!-- 확인(11-23): .github/workflows/model.yml 의 step 은 python -m training.train / validate_model / export_onnx / model_card / check_parity 와 deploy/lightsail 스크립트·ledger.py 로 모델 종류와 무관하다. 모델 정의는 training/train.py(sklearn Pipeline: TfidfTransformer + LogisticRegression), 특징은 paperclf/features.py. -->
 
@@ -498,7 +500,7 @@ rollback  rollback(작업용) · rollback-final(최종, 서버에 남은 version
 | 근거 찾기 | **bge-m3** (임베딩) | 질문에 맞는 논문을 의미 검색 |
 | 참고문헌 | (모델 안 씀) | DB 서지 값만 — LLM이 지어내지 않음 |
 
-<p class="fragment"><b>실제 생성</b>: 볼트에 5편 · 11-21 14:42 보고서 66초 · 인용 <b>27 / 30</b></p>
+<p><b>실제 생성</b>: 볼트에 5편 · 11-21 14:42 보고서 66초 · 인용 <b>27 / 30</b></p>
 
 <!-- 확인(11-23): 웹 /api/llm/status 가 generation_model = qwen3:4b-instruct-2507-q4_K_M, embedding_model = bge-m3 로 응답. 보고서 파일 머리 model 값도 같은 모델. 서비스용 paperclf 학생 모델과 달리 이쪽은 LLM 이 직접 글을 쓴다 — 대신 문장마다 인용을 강제하고 참고문헌은 DB 에서만 가져온다. -->
 
@@ -508,7 +510,7 @@ rollback  rollback(작업용) · rollback-final(최종, 서버에 남은 version
 # 정리
 
 <p>검증을 통과한 것만 운영에 들어갔고,<br><b>실제로 돌았다</b></p>
-<p class="fragment">코드 변경 → 배포 · 데이터 변경 → 학습·게이트 → 승격 → 롤백</p>
-<p class="fragment">감사합니다</p>
+<p>코드 변경 → 배포 · 데이터 변경 → 학습·게이트 → 승격 → 롤백</p>
+<p>감사합니다</p>
 
 <!-- 마무리에서 시연 흐름 한 줄을 다시 읽는다. -->
