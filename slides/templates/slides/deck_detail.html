@@ -9,6 +9,7 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/theme/white.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/plugin/highlight/monokai.css">
+    {% if deck.theme == "orange" %}<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">{% endif %}
     <style>
         :root {
             --r-main-font: "Apple SD Gothic Neo", "Malgun Gothic", "Noto Sans KR", sans-serif;
@@ -59,11 +60,44 @@
         .reveal .callout-important { border-color: #8250df; background: #fbefff; }
         .reveal .callout-warning { border-color: #9a6700; background: #fff8c5; }
         .reveal .callout-caution { border-color: #cf222e; background: #ffebe9; }
+        /* ── 주황 테마(front matter `theme: orange`) — 2026-11-23 연구자 지시: 교수님 강의 슬라이드 모양
+           흰 장 + 굵은 제목 아래 주황 막대 + 주황 글머리, 절 구분(lead) 장은 주황 바탕에 큰 번호, 장마다 아래 왼쪽 꼬리말·오른쪽 쪽 번호 */
+        .theme-orange { --accent: #d1450e; --ink: #1f1f1f; --text: #333; --muted: #777; }
+        .theme-orange .reveal { --r-main-font: "Pretendard Variable", Pretendard, "Apple SD Gothic Neo", "Malgun Gothic", sans-serif; --r-heading-font: var(--r-main-font); --r-main-color: var(--text); --r-heading-color: var(--ink); --r-link-color: var(--accent); }
+        .theme-orange .reveal-viewport { background: #f2f2f4; }
+        .theme-orange .reveal .slides { border-radius: 8px; box-shadow: 0 1px 10px rgba(0,0,0,.10); }
+        .theme-orange .reveal .slides::after { display: none; }   /* 검은 네모 대신 그림자 */
+        .theme-orange .reveal .slides > section { padding: 52px 88px 70px !important; height: 720px; }
+        .theme-orange .reveal .slides > section.present:not(.lead) > h2:first-child { margin-bottom: .5em; }  /* 내용은 제목 바로 아래부터 */
+        .theme-orange .reveal h2 { font-size: 1.35em; font-weight: 800; letter-spacing: -.01em; }
+        .theme-orange .reveal h2::after { content: ""; display: block; width: 64px; height: 4px; margin-top: 16px; background: var(--accent); }
+        .theme-orange .reveal h2 + p > em:only-child { font-style: normal; color: var(--text); }
+        .theme-orange .reveal strong, .theme-orange .reveal b { color: var(--ink); font-weight: 700; }
+        .theme-orange .reveal ul { list-style: disc; }
+        .theme-orange .reveal ul li::marker { color: var(--accent); }
+        .theme-orange .reveal ul ul { list-style: circle; }
+        .theme-orange .reveal ul ul li::marker { color: #666; }
+        .theme-orange .reveal li { margin: .18em 0; }
+        .theme-orange .reveal table th { border-bottom: 2px solid var(--accent); color: var(--ink); }
+        .theme-orange .reveal code:not(pre code) { color: var(--accent); background: #fbefe9; padding: 0 .2em; border-radius: 3px; }
+        /* 절 구분·표지: 주황 바탕, 왼쪽 정렬, 큰 번호 */
+        .theme-orange .reveal .slides > section.lead { background: var(--accent); border-radius: 8px; text-align: left; padding: 0 96px !important; }
+        .theme-orange .reveal .slides > section.lead.present { display: flex !important; flex-direction: column; justify-content: center; }
+        .theme-orange .reveal section.lead, .theme-orange .reveal section.lead h1, .theme-orange .reveal section.lead h2,
+        .theme-orange .reveal section.lead h3, .theme-orange .reveal section.lead p, .theme-orange .reveal section.lead strong { color: #fff; }
+        .theme-orange .reveal section.lead p { opacity: .9; }
+        .theme-orange .reveal section.lead h1 { font-size: 2.1em; font-weight: 800; margin: 0 0 .3em; }
+        .theme-orange .reveal section.lead .sec-num { font-size: 4.4em; font-weight: 800; line-height: 1; margin-bottom: .15em; }
+        /* 꼬리말·쪽 번호 — 장 안쪽 아래 */
+        .theme-orange .deck-foot { position: absolute; left: 88px; right: 88px; bottom: 24px; display: flex; justify-content: space-between; font-size: 15px; color: var(--muted); }
+        .theme-orange .deck-foot b { color: var(--accent); }
+        .theme-orange section.lead .deck-foot, .theme-orange section.lead .deck-foot b { color: #fff; opacity: 1; }
+        .theme-orange .reveal .slide-number, .theme-orange .reveal .controls, .theme-orange .reveal .progress { display: none !important; }  /* 쪽 번호는 꼬리말이 그린다, 넘기기는 키·스와이프 */
         .back { position: fixed; top: 12px; left: 16px; z-index: 30; font: 14px var(--r-main-font); color: #64748b; text-decoration: none; }
     </style>
 </head>
 
-<body>
+<body{% if deck.theme %} class="theme-{{ deck.theme }}"{% endif %} data-footer="{{ deck.footer }}">
     <a class="back" href="{% url 'deck_list' %}">← 강의안 목록</a>
     <div class="reveal">
         <div class="slides">
@@ -151,7 +185,27 @@
             });
         }
         const fitAll = s => { fitTables(s); fitCode(s); };
-        Reveal.on('ready', e => fitAll(e.currentSlide));
+        // 주황 테마: 절 구분 장의 "1. 제목" → 큰 번호 + 제목, 장마다 꼬리말·쪽 번호
+        function decorate() {
+            if (!document.body.classList.contains('theme-orange')) return;
+            const footer = document.body.dataset.footer || '';
+            const all = Array.from(document.querySelectorAll('.reveal .slides > section'));
+            all.forEach((sec, i) => {
+                const h1 = sec.classList.contains('lead') && sec.querySelector('h1');
+                const m = h1 && h1.textContent.match(/^(\d+)\.\s+(.+)$/);
+                if (m) {
+                    const num = document.createElement('div');
+                    num.className = 'sec-num'; num.textContent = m[1];
+                    h1.textContent = m[2]; h1.before(num);
+                }
+                const foot = document.createElement('div');
+                foot.className = 'deck-foot';
+                const left = document.createElement('span'); left.textContent = footer;
+                const right = document.createElement('b'); right.textContent = `${i + 1} / ${all.length}`;
+                foot.append(left, right); sec.append(foot);
+            });
+        }
+        Reveal.on('ready', e => { decorate(); fitAll(e.currentSlide); });
         Reveal.on('slidechanged', e => fitAll(e.currentSlide));
     </script>
 

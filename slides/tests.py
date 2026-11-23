@@ -117,3 +117,28 @@ class MarkdownExtrasTests(SimpleTestCase):
     def test_code_line_highlight_braces_to_reveal_brackets(self):
         s = _extract_notes("```javascript {1,2}\nimport os\n```")
         self.assertTrue(s.body.startswith("```javascript [1,2]"))
+
+
+class ThemeTest(SimpleTestCase):
+    def setUp(self):
+        self.tmp = tempfile.TemporaryDirectory()
+        self.addCleanup(self.tmp.cleanup)
+        override = override_settings(SLIDES_DIR=self.tmp.name)
+        override.enable()
+        self.addCleanup(override.disable)
+
+    def _write(self, front: str):
+        Path(self.tmp.name, "t.md").write_text(f"---\n{front}\n---\n\n# 제목\n", encoding="utf-8")
+
+    def test_orange_theme_and_footer_from_front_matter(self):
+        self._write("theme: orange\nfooter: 꼬리 <b>말</b>")
+        deck = load_deck("t")
+        self.assertEqual((deck.theme, deck.footer), ("orange", "꼬리 <b>말</b>"))
+        html = self.client.get("/t/").content.decode()
+        self.assertIn('class="theme-orange"', html)
+        self.assertIn('data-footer="꼬리 &lt;b&gt;말&lt;/b&gt;"', html)  # 꼬리말은 이스케이프
+
+    def test_unknown_theme_is_ignored(self):
+        self._write("theme: gaia")
+        self.assertEqual(load_deck("t").theme, "")
+        self.assertNotIn("theme-", self.client.get("/t/").content.decode().split("<body", 1)[1].split(">", 1)[0])

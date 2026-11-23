@@ -39,6 +39,20 @@ class Deck:
     slug: str
     title: str
     slides: list[Slide]
+    theme: str = ""        # front matter `theme: orange` → <body class="theme-orange">
+    footer: str = ""       # front matter `footer: …` → 장마다 왼쪽 아래 글 (theme 이 그릴 때)
+
+
+# front matter 에서 읽는 값 — 테마 이름은 템플릿이 아는 것만 받는다
+_THEMES = {"orange"}
+_FM_LINE = re.compile(r"^(theme|footer)\s*:\s*(.*?)\s*$", re.MULTILINE)
+
+
+def _front_matter(text: str) -> dict[str, str]:
+    m = _FRONT_MATTER.match(text)
+    if not m:
+        return {}
+    return {k: v.strip("'\"") for k, v in _FM_LINE.findall(m.group(0))}
 
 
 def decks_dir() -> Path:
@@ -126,10 +140,13 @@ def load_deck(slug: str) -> Deck | None:
     if path is None:
         return None
     text = path.read_text(encoding="utf-8")
+    fm = _front_matter(text)
     text = _FRONT_MATTER.sub("", text, count=1)
     slides = [_extract_notes(c) for c in _split_slides(text)]
     slides = [s for s in slides if s.body or s.notes]
-    return Deck(slug=slug, title=_title(slides, slug), slides=slides)
+    theme = fm.get("theme", "")
+    return Deck(slug=slug, title=_title(slides, slug), slides=slides,
+                theme=theme if theme in _THEMES else "", footer=fm.get("footer", "")[:120])
 
 
 def list_decks() -> list[Deck]:
