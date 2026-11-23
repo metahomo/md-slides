@@ -162,9 +162,16 @@
                 let size = Math.min(cap, base * avail / need);
                 const lines = code.textContent.replace(/\n$/, '').split('\n').length;
                 size = Math.min(size, 720 * 0.45 / (lines * 1.3));
-                if (size > base) pre.style.fontSize = size.toFixed(1) + 'px';
+                // 키우기만 하던 것을 줄이기도 한다 — 기본 크기에서도 가장 긴 줄이 상자보다 넓으면 잘렸다(2026-11-23 14장)
+                size = Math.max(size, 10);
+                if (Math.abs(size - base) > 0.2) pre.style.fontSize = size.toFixed(1) + 'px';
+                // 줄 번호·강조 표 등으로 실제 폭이 더 넓으면 넘치지 않을 때까지 조금씩 줄인다
+                const width = () => { code.style.display = 'inline-block'; code.style.width = 'auto'; code.style.maxWidth = 'none';
+                                      const w = code.scrollWidth; [code.style.display, code.style.width, code.style.maxWidth] = prev; return w; };
+                let guard = 0;
+                while (width() > avail && size > 10 && guard++ < 40) { size -= 0.5; pre.style.fontSize = size.toFixed(1) + 'px'; }
                 // 글이 상자 폭을 다 채우지 못하면(상한에 걸림) 상자를 글 폭 + 안쪽 여백으로 줄인다
-                const filled = need * size / base;
+                const filled = width();
                 if (filled < avail * 0.95) pre.style.width = Math.ceil(filled + 40) + 'px';
             });
         }
@@ -172,7 +179,9 @@
         function fitTables(slide) {
             if (!slide) return;
             const body = parseFloat(getComputedStyle(slide).fontSize);
+            // 코드 상자 안의 줄 번호 표(hljs-ln)는 표가 아니다 — 여기서 키우면 코드가 잘리고 겹쳤다(2026-11-23 14장)
             slide.querySelectorAll('table').forEach(tb => {
+                if (tb.closest('pre')) return;
                 tb.style.fontSize = ''; tb.style.width = '';
                 const base = parseFloat(getComputedStyle(tb).fontSize);
                 const avail = slide.clientWidth - 48;
