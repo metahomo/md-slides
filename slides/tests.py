@@ -142,3 +142,28 @@ class ThemeTest(SimpleTestCase):
         self._write("theme: gaia")
         self.assertEqual(load_deck("t").theme, "")
         self.assertNotIn("theme-", self.client.get("/t/").content.decode().split("<body", 1)[1].split(">", 1)[0])
+
+
+class LogoTest(SimpleTestCase):
+    def setUp(self):
+        self.tmp = tempfile.TemporaryDirectory()
+        self.addCleanup(self.tmp.cleanup)
+        override = override_settings(SLIDES_DIR=self.tmp.name)
+        override.enable()
+        self.addCleanup(override.disable)
+        Path(self.tmp.name, "assets").mkdir()
+        Path(self.tmp.name, "assets", "a.png").write_bytes(b"\x89PNG\r\n")
+        Path(self.tmp.name, "t.md").write_text(
+            "---\ntheme: orange\nlogos: assets/a.png, ../x.png, assets/b.js, assets/c.svg\n---\n\n# 제목\n", encoding="utf-8")
+
+    def test_only_asset_images_are_kept_in_order(self):
+        self.assertEqual(load_deck("t").logos, ("assets/a.png", "assets/c.svg"))
+        self.assertIn('data-logos="assets/a.png,assets/c.svg"', self.client.get("/t/").content.decode())
+
+    def test_asset_is_served_and_copied_by_build(self):
+        self.assertEqual(self.client.get("/assets/a.png").status_code, 200)
+        self.assertEqual(self.client.get("/assets/..%2Ft.md").status_code, 404)
+        out = Path(self.tmp.name, "_out")
+        from django.core.management import call_command
+        call_command("build_site", out=str(out), base_path="/x/")
+        self.assertTrue((out / "assets" / "a.png").is_file())

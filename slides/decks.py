@@ -41,11 +41,14 @@ class Deck:
     slides: list[Slide]
     theme: str = ""        # front matter `theme: orange` → <body class="theme-orange">
     footer: str = ""       # front matter `footer: …` → 장마다 왼쪽 아래 글 (theme 이 그릴 때)
+    logos: tuple[str, ...] = ()  # front matter `logos: assets/a.png, assets/b.png` → 장마다 오른쪽 위 (theme 이 그릴 때)
 
 
 # front matter 에서 읽는 값 — 테마 이름은 템플릿이 아는 것만 받는다
 _THEMES = {"orange"}
-_FM_LINE = re.compile(r"^(theme|footer)\s*:\s*(.*?)\s*$", re.MULTILINE)
+_FM_LINE = re.compile(r"^(theme|footer|logos)\s*:\s*(.*?)\s*$", re.MULTILINE)
+# 로고는 decks/assets/ 안의 그림만 받는다(경로 밖·스크립트 금지)
+_LOGO = re.compile(r"^assets/[\w.-]+\.(?:png|jpe?g|svg|webp)$")
 
 
 def _front_matter(text: str) -> dict[str, str]:
@@ -146,7 +149,8 @@ def load_deck(slug: str) -> Deck | None:
     slides = [s for s in slides if s.body or s.notes]
     theme = fm.get("theme", "")
     return Deck(slug=slug, title=_title(slides, slug), slides=slides,
-                theme=theme if theme in _THEMES else "", footer=fm.get("footer", "")[:120])
+                theme=theme if theme in _THEMES else "", footer=fm.get("footer", "")[:120],
+                logos=tuple(x for x in (v.strip() for v in fm.get("logos", "").split(",")) if _LOGO.match(x))[:5])
 
 
 def list_decks() -> list[Deck]:

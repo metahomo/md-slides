@@ -93,12 +93,22 @@
         .theme-orange .deck-foot { position: absolute; left: 88px; right: 88px; bottom: 24px; display: flex; justify-content: space-between; font-size: 15px; color: var(--muted); }
         .theme-orange .deck-foot b { color: var(--accent); }
         .theme-orange section.lead .deck-foot, .theme-orange section.lead .deck-foot b { color: #fff; opacity: 1; }
+        /* 표지(`_class: lead cover`) — 큰 제목 · 주제 · 한 줄 결론 · 과정/발표자/일시 */
+        .theme-orange .reveal section.cover h1 { font-size: 1.75em; letter-spacing: -.01em; margin-bottom: .25em; }
+        .theme-orange .reveal section.cover h2 { font-size: 1.35em; font-weight: 700; margin: 0 0 .9em; padding-bottom: .35em; border-bottom: 3px solid rgba(255,255,255,.85); align-self: flex-start; }
+        .theme-orange .reveal section.cover .cover-tagline { font-size: .72em; max-width: 920px; line-height: 1.5; margin: 0 0 1.6em; }
+        .theme-orange .reveal section.cover .cover-meta { font-size: .78em; line-height: 1.7; border-left: 4px solid #fff; padding-left: 16px; margin: 0; }
+        /* 로고(front matter `logos:`) — 장마다 오른쪽 위, 같은 높이로 왼쪽부터 차례로. 표지·절 장(주황)에서는 흰 받침 */
+        .theme-orange .deck-logos { position: absolute; top: 14px; right: 28px; display: flex; align-items: center; gap: 14px; z-index: 5; }
+        .theme-orange .deck-logos img { height: 28px; width: auto; display: block; margin: 0; box-shadow: none; border: 0; background: none; }
+        .theme-orange section.lead .deck-logos { background: #fff; padding: 6px 12px; border-radius: 8px; }
+        .theme-orange .reveal .slides > section.has-logos:not(.lead) { padding-top: 62px !important; }
         .theme-orange .reveal .slide-number, .theme-orange .reveal .controls, .theme-orange .reveal .progress { display: none !important; }  /* 쪽 번호는 꼬리말이 그린다, 넘기기는 키·스와이프 */
         .back { position: fixed; top: 12px; left: 16px; z-index: 30; font: 14px var(--r-main-font); color: #64748b; text-decoration: none; }
     </style>
 </head>
 
-<body{% if deck.theme %} class="theme-{{ deck.theme }}"{% endif %} data-footer="{{ deck.footer }}">
+<body{% if deck.theme %} class="theme-{{ deck.theme }}"{% endif %} data-footer="{{ deck.footer }}" data-base="{% url 'deck_list' %}" data-logos="{{ deck.logos|join:',' }}">
     <a class="back" href="{% url 'deck_list' %}">← 강의안 목록</a>
     <div class="reveal">
         <div class="slides">
@@ -190,6 +200,8 @@
         function decorate() {
             if (!document.body.classList.contains('theme-orange')) return;
             const footer = document.body.dataset.footer || '';
+            const base = document.body.dataset.base || '/';
+            const logos = (document.body.dataset.logos || '').split(',').filter(Boolean);
             const all = Array.from(document.querySelectorAll('.reveal .slides > section'));
             all.forEach((sec, i) => {
                 const h1 = sec.classList.contains('lead') && sec.querySelector('h1');
@@ -204,6 +216,12 @@
                 const left = document.createElement('span'); left.textContent = footer;
                 const right = document.createElement('b'); right.textContent = `${i + 1} / ${all.length}`;
                 foot.append(left, right); sec.append(foot);
+                if (logos.length) {
+                    const box = document.createElement('div');
+                    box.className = 'deck-logos';
+                    logos.forEach(src => { const img = document.createElement('img'); img.src = base + src; img.alt = ''; box.append(img); });
+                    sec.append(box); sec.classList.add('has-logos');
+                }
             });
         }
         Reveal.on('ready', e => { decorate(); fitAll(e.currentSlide); });

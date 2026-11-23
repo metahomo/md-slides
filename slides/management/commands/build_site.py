@@ -12,7 +12,7 @@ from django.core.management.base import BaseCommand, CommandError
 from django.template.loader import render_to_string
 from django.urls import get_script_prefix, set_script_prefix
 
-from slides.decks import list_decks
+from slides.decks import decks_dir, list_decks
 
 
 class Command(BaseCommand):
@@ -52,6 +52,10 @@ class Command(BaseCommand):
         finally:
             set_script_prefix(old_prefix)
 
+        # 덱 그림(로고 등) — decks/assets/ → <out>/assets/
+        assets = decks_dir() / "assets"
+        if assets.is_dir():
+            shutil.copytree(assets, out_dir / "assets")
         # GitHub Pages 가 _ 로 시작하는 폴더를 숨기지 않도록 한다.
         (out_dir / ".nojekyll").write_text("", encoding="utf-8")
         self.stdout.write(f"강의안 {len(decks)}개 → {out_dir}/ (기준 경로 {base_path})")

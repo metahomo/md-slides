@@ -26,6 +26,8 @@
 | 글머리 | 1단 주황 점, 2단 회색 빈 원, `**굵게**` 는 진한 검정 |
 | 절 구분 `lead` | 주황 바탕 · 왼쪽 정렬 · `# 1. 제목` 의 번호를 크게 따로 그린다 |
 | 꼬리말 | 장마다 왼쪽 아래 `footer` 글, 오른쪽 아래 주황 쪽 번호 `3 / 30` |
+| 로고 | front matter `logos: assets/a.png, assets/b.png, …` — 장마다 오른쪽 위에 적은 순서대로, 높이 28px 로 같게(주황 장에서는 흰 받침). 그림은 `decks/assets/` 에 두고(png·jpg·svg·webp, 최대 5개), `build_site` 가 `_site/assets/` 로 복사한다 |
+| 표지 | `<!-- _class: lead cover -->` + `# 큰 제목` · `## 주제` · `<p class="cover-tagline">한 줄 결론</p>` · `<p class="cover-meta">과정<br>발표자 · 일시</p>` |
 
 `theme` 은 템플릿이 아는 이름(`orange`)만 받고, 모르는 이름은 무시한다.
 
