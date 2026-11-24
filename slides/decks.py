@@ -45,7 +45,7 @@ class Deck:
 
 
 # front matter 에서 읽는 값 — 테마 이름은 템플릿이 아는 것만 받는다
-_THEMES = {"orange"}
+_THEMES = {"orange", "starbucks"}  # starbucks = 주황 테마 틀 + 스타벅스 색(2026-11-24)
 _FM_LINE = re.compile(r"^(theme|footer|logos)\s*:\s*(.*?)\s*$", re.MULTILINE)
 # 로고는 decks/assets/ 안의 그림만 받는다(경로 밖·스크립트 금지)
 _LOGO = re.compile(r"^assets/[\w.-]+\.(?:png|jpe?g|svg|webp)$")

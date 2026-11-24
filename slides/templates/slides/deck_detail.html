@@ -9,7 +9,7 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/theme/white.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/plugin/highlight/monokai.css">
-    {% if deck.theme == "orange" %}<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">{% endif %}
+    {% if deck.theme == "orange" or deck.theme == "starbucks" %}<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">{% endif %}
     <style>
         :root {
             --r-main-font: "Apple SD Gothic Neo", "Malgun Gothic", "Noto Sans KR", sans-serif;
@@ -104,6 +104,16 @@
         .theme-orange section.lead .deck-logos { background: #fff; padding: 6px 12px; border-radius: 8px; }
         .theme-orange .reveal .slides > section.has-logos:not(.lead) { padding-top: 62px !important; }
         .theme-orange .reveal .slide-number, .theme-orange .reveal .controls, .theme-orange .reveal .progress { display: none !important; }  /* 쪽 번호는 꼬리말이 그린다, 넘기기는 키·스와이프 */
+        /* ── 스타벅스 테마(front matter `theme: starbucks`) — 2026-11-24 연구자 지시. 주황 테마의 틀을 그대로 쓰고 색만 바꾼다:
+              초록 #00704A(강조), 짙은 초록 #1E3932(절 구분 장), 크림 바탕, 짙은 갈색 글자 */
+        .theme-starbucks { --accent: #00704A; --ink: #1E3932; --text: #3b2f2a; --muted: #7d6e63; }
+        .theme-starbucks .reveal-viewport { background: #efe9dd; }
+        .theme-starbucks .reveal .slides { background: #fbf8f1; }
+        .theme-starbucks .reveal code:not(pre code) { background: #e3efe8; }
+        .theme-starbucks .reveal .slides > section.lead { background: #1E3932; }
+        .theme-starbucks .reveal section.cover { background: #00704A; }
+        .theme-starbucks .reveal ul ul li::marker { color: #8a7a6d; }
+        .theme-starbucks .pdf-btn { background: #00704A; }
         .back { position: fixed; top: 12px; left: 16px; z-index: 30; font: 14px var(--r-main-font); color: #64748b; text-decoration: none; }
         /* PDF 버튼 (서버에서 볼 때만, 2026-11-24) */
         .pdf-btn { position: fixed; top: 8px; left: 112px; z-index: 30; font: 12px sans-serif; color: #fff; background: #e8743f; padding: 3px 10px; border-radius: 12px; text-decoration: none; opacity: .85; }
@@ -112,7 +122,7 @@
     </style>
 </head>
 
-<body{% if deck.theme %} class="theme-{{ deck.theme }}"{% endif %} data-footer="{{ deck.footer }}" data-base="{% url 'deck_list' %}" data-logos="{{ deck.logos|join:',' }}">
+<body{% if deck.theme == "starbucks" %} class="theme-orange theme-starbucks"{% elif deck.theme %} class="theme-{{ deck.theme }}"{% endif %} data-footer="{{ deck.footer }}" data-base="{% url 'deck_list' %}" data-logos="{{ deck.logos|join:',' }}">
     <a class="back" href="{% url 'deck_list' %}">← 강의안 목록</a>
     {% if live or static %}<a class="pdf-btn" href="{% url 'deck_list' %}{{ deck.slug }}.pdf" download title="화면 그대로 PDF 로 내려받기">PDF ↓</a>{% endif %}
     <div class="reveal">
