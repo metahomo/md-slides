@@ -483,8 +483,7 @@ rollback  rollback(작업용) · rollback-final(최종, 서버에 남은 version
 | MCP 서버 | 도구 `classify_paper` | ✔ 로컬 stdio + 원격 `POST /mcp`(v0.1.4) |
 | 에이전트 스킬 | 언제 쓰나 · 결과 읽기 · 오류 | ✔ `skills/paperclf-classify` |
 
-> [!NOTE]
-> `/predict`와 `/mcp`는 같은 보호 뒤에 있다 — 토큰 없으면 **401**, IP당 분당 60 넘으면 **429**
+<p><code>/predict</code>·<code>/mcp</code> 는 같은 보호 — 토큰 없으면 <b>401</b>, 분당 60 넘으면 <b>429</b></p>
 
 <!-- presentation/04-service-for-ai.md. 원격 MCP 는 v0.1.4(PR #38), 스킬은 PR #39. 토큰은 서버 .env 에만 있다. -->
 
