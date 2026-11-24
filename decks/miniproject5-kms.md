@@ -134,9 +134,11 @@ PR · main → ci test(pytest) → 통과해야 image
 
 ---
 
+<!-- _class: dense -->
+
 ## 태그마다 한 겹씩 더했다
 
-*v0.1.1 첫 자동 배포 → 지금 운영은 v0.1.5*
+*v0.1.1 첫 자동 배포 → 지금 운영은 v0.1.7*
 
 | 태그 | 바뀐 것 |
 |---|---|
@@ -144,7 +146,9 @@ PR · main → ci test(pytest) → 통과해야 image
 | v0.1.2 | 예측 로그 — 원문 없이 해시·점수만 ledger 에 |
 | v0.1.3 | 공개 API 보호 — 토큰 401/200, 분당 60 초과 429 |
 | v0.1.4 | 원격 MCP `POST /mcp` (릴리스) |
-| **v0.1.5** | 입력 검증 버그 3건 · 시험 32→87 (릴리스) |
+| v0.1.5 | 입력 검증 버그 3건 · 시험 32→87 (릴리스) |
+| v0.1.6 | 첫 화면(`/`) API 안내 · 최종 서버 bootstrap (릴리스) |
+| **v0.1.7** | `/health`에 `started_at` — 배포·되돌리기를 health 만으로 확인 (릴리스) |
 
 <!-- 릴리스는 v0.1.1 · v0.1.4 · v0.1.5 (v0.1.5 = PR #54·#55, 11-20; v0.1.4 릴리스에 v0.1.2~0.1.4 묶음: 예측 로그·API 보호·원격 MCP·자동 복귀 보강·복구 훈련·스킬). 증거: v0.1.1 https://github.com/metahomo/miniproject5_kms/actions/runs/44513840582 · v0.1.4 https://github.com/metahomo/miniproject5_kms/actions/runs/44543294166 -->
 
@@ -152,17 +156,19 @@ PR · main → ci test(pytest) → 통과해야 image
 
 ## 시연 ② 게이트 셋 — 하한 하나로는 약한 모델을 못 거른다
 
-*test set 이 불균형(include 140/178 = 79%)이라 2번이 핵심이다*
+*처음 test set(11-19, 178편)이 include 79% 로 불균형이라 2번을 더했다*
 
 1. include F1 ≥ **0.80** (하한)
-2. F1 ≥ **기준선 + 0.05** — "전부 include"만 답해도 F1 0.8805
+2. F1 ≥ **기준선 + 0.05** — 그때는 "전부 include"만 답해도 F1 0.8805
 3. 운영 모델보다 **0.02** 넘게 떨어지지 않을 것
 
-<p>test set = 교사 라벨 고정 20% (178편)</p>
+<p>지금 운영 <b>m20261121-30</b>: test set 877편(교사 라벨 고정 20%) · 기준선 0.5635 · F1 <b>0.8289</b> → 세 조건 통과</p>
 
 <!-- ADR-006. 기준선은 데이터마다 다시 잰다 — 11-19 0.8805, 새 7편을 더한 11-20 0.882. 하이퍼파라미터 C 를 게이트 시험지로 고르면 시험지에 과적합하므로 미리 정한 4를 유지했다. -->
 
 ---
+
+<!-- _class: dense -->
 
 ## 시연 ② 검증이 실제로 막았다
 
@@ -172,6 +178,7 @@ PR · main → ci test(pytest) → 통과해야 image
 |---|---|---|---|
 | 전체 데이터 | 674 | **0.9603** | 통과 |
 | 데이터 5% (m20261119-9) | 33 | 0.9021 | **실패** → 승격 건너뜀 |
+| 데이터 5% (m20261121-27, 11-21 리허설) | — | 0.9091 | **실패** (기준선 0.882 + 0.05) |
 
 > [!IMPORTANT]
 > 하한 하나였다면 **통과했을 모델**이다
@@ -184,9 +191,9 @@ PR · main → ci test(pytest) → 통과해야 image
 
 *허용 1e-5*
 
-- 원본 sklearn ↔ **실제 서빙 이미지(ONNX)** 확률 차이: Actions **5.8e-7** · 최신 version 5.5e-7
+- 원본 sklearn ↔ **실제 서빙 이미지(ONNX)** 확률 차이: Actions **5.8e-7** · 운영 m20261121-30 **1.5e-6**
 - 잡은 문제: `sublinear_tf=True` → 변환 뒤 **0.0018** 어긋남 → 끄고 4.4e-9
-- 허용치를 1e-12로 좁히면 parity에서 멈추고 승격 건너뜀 (m20261119-12)
+- 허용치를 1e-12로 좁히면 parity에서 멈추고 승격 건너뜀 (m20261119-12 · 11-21 리허설 m20261121-28: 5.5e-7 > 1e-12)
 
 <p>변환기 옵션 하나로 모델이 달라진다 → 학습 직후와 이미지, 두 곳에서 본다</p>
 
@@ -202,11 +209,10 @@ PR · main → ci test(pytest) → 통과해야 image
 
 | model version | 게이트 | parity | 승격 |
 |---|---|---|---|
-| m20261119-7 · 8 · 11 | 통과 | 통과 | **승격** |
-| m20261119-9 (데이터 5%) | 실패 | — | 보류 |
-| m20261119-12 (허용 1e-12) | 통과 | 실패 | 보류 |
-| m20261120-17 (새 데이터) | 통과 | 통과 | 승격 |
-| **m20261120-24** (최종 서버 개통) | 통과 | 통과 | **승격 — 두 서버 운영** |
+| m20261119-7·8·11 · m20261120-17·24 | 통과 | 통과 | 승격 |
+| m20261119-9 · m20261121-27 (데이터 5%) | 실패 | — | 보류 |
+| m20261119-12 · m20261121-28 (허용 1e-12) | 통과 | 실패 | 보류 |
+| **m20261121-30** (새 논문 3,511편) | 통과 | 통과 | **승격 — 두 서버 운영 중** |
 
 <p>ledger 트리거가 m20261119-9 거부: <code>has not passed gate and parity</code></p>
 
@@ -216,12 +222,12 @@ PR · main → ci test(pytest) → 통과해야 image
 
 ## 새 데이터가 들어오면 — 사람 손 없이 재학습·승격
 
-*R3의 실제 흐름: KMS가 모은 새 논문 7편으로 자동 재학습*
+*R3의 실제 흐름: KMS가 모은 새 논문으로 자동 재학습 — 11-20 7편, 11-21 3,511편*
 
 ```text {3}
-KMS 수집 새 논문 7편 → 교사 라벨(include 6 · exclude 1) → snapshot PR
+KMS 수집 새 논문 3,511편 → 교사 라벨(42분) → snapshot PR #64
   → main 병합 = data/snapshots 변경 → model 자동 실행
-  → 게이트 F1 0.9609 → parity 5.5e-7 → 승격 m20261120-17 → ledger 기록
+  → 게이트 F1 0.8289(기준선 0.5635) → parity 통과 → 승격 m20261121-30 → 두 서버 · ledger
 ```
 
 > [!TIP]
@@ -239,6 +245,7 @@ KMS 수집 새 논문 7편 → 교사 라벨(include 6 · exclude 1) → snapsho
 |---|---|---|---|
 | 모델 (`rollback.yml`) | m20261119-8 → 7 | 7 → 8 | 이미지 |
 | 코드 (직전 태그 ci 재실행) | v0.1.1 → v0.1.0 | → v0.1.1 | 모델 |
+| 모델 · 두 서버 (11-21) | m20261121-30 → 20-24 (26초) | → 30 (32초) | 이미지 |
 
 <!-- runbooks/rollback.md. 증거: →7 https://github.com/metahomo/miniproject5_kms/actions/runs/44514983743 · →8 https://github.com/metahomo/miniproject5_kms/actions/runs/44515052182 · 코드 v0.1.0 https://github.com/metahomo/miniproject5_kms/actions/runs/44453216170 -->
 
@@ -258,15 +265,15 @@ KMS 수집 새 논문 7편 → 교사 라벨(include 6 · exclude 1) → snapsho
 
 ## 운영 — 지금 실제로 돌고 있다
 
-*작업용 서버 하나에 code version·model version 이 함께*
+*두 서버에 같은 code version·model version*
 
 | 항목 | 지금 |
 |---|---|
-| 주소 | `https://54-252-22-31.sslip.io` |
-| version | app **v0.1.5** · model **m20261120-24** (F1 0.9609 · parity 4.1e-7) |
+| 주소 | `https://nlpwizard.eta.pyhub.kr` (최종) · `54-252-22-31.sslip.io` (작업용) |
+| version | app **v0.1.7** · model **m20261121-30** (F1 0.8289 · parity 1.5e-6) |
 | 보호 | 토큰 · 분당 60 · 보안 헤더(HSTS · nosniff · no-referrer) |
-| 릴리스 | v0.1.1 · v0.1.4 · v0.1.5 |
-| 보드 | Done **13/16** |
+| 릴리스 | v0.1.1 · v0.1.4 · v0.1.5 · v0.1.6 · v0.1.7 |
+| 보드 | Done **15/16** (남은 것: #11 발표) |
 
 <!-- 보안 헤더는 Caddy(PR #41), Server 헤더도 숨김. 자원 정리는 runbooks/teardown.md. -->
 
@@ -280,7 +287,7 @@ KMS 수집 새 논문 7편 → 교사 라벨(include 6 · exclude 1) → snapsho
 - ledger 백업: 승격·롤백 직후 + 매일
 - 백업 **restore drill** 통과 — 건수 · 운영 version · 트리거 일치
 
-<p>남은 것: 22번 닫기·정리(#1·#8), 마감·발표(#11)</p>
+<p>남은 것: #11 발표 → 자원 정리(런북 teardown) · SSH 22번은 11-20 좁히기로 끝</p>
 
 <!-- uptime PR #42(첫 실행 성공). 복구 훈련: 버킷 최신 덤프 → 임시 DB, 건수·운영 판·트리거 일치(PR #37) — 복원해 보니 API 계정이 없어 권한 줄이 실패하는 것을 찾아 절차에 선생성을 넣었다. -->
 
@@ -298,7 +305,7 @@ KMS 수집 새 논문 7편 → 교사 라벨(include 6 · exclude 1) → snapsho
 | 맡는 일 | 승격 · 롤백 · ledger — 검증의 현장 | 최종 서비스 |
 | model version 받는 길 | 버킷 | 같은 Actions run 의 artifact (`model-artifacts`) |
 | runner | `paperclf` | `paperclf-final` (label `final`) |
-| 상태 | **운영 중** | **운영 중** (v0.1.5 · m20261120-24) |
+| 상태 | **운영 중** | **운영 중** — 두 서버 모두 v0.1.7 · m20261121-30 |
 
 <!-- runbooks/final-server.md(PR #45·#56). 최종 서버 = 연구자 계정 새 Lightsail 인스턴스, 고정 IP 54.253.32.153. 11-20 bootstrap.sh final → 러너 paperclf-final → FINAL_ENABLED=true → model 실행(promote-final) → v0.1.5 태그 재실행(deploy-final). 첫 promote-final 은 이미지가 없어 실패했고 deploy-final 뒤 정상. 11-20 도메인 nlpwizard.eta.pyhub.kr 을 새 고정 IP 54.253.32.153 으로 바꿈(연구자) → Caddy 가 Let's Encrypt 인증서 자동 발급, https 운영. 시연은 https://nlpwizard.eta.pyhub.kr/health. -->
 
@@ -370,13 +377,13 @@ rollback  rollback(작업용) · rollback-final(최종, 서버에 남은 version
 
 | 산출물 | 확인한 방법 |
 |---|---|
-| 코드 | pytest 87개 + Actions `ci` |
+| 코드 | pytest 90개(84 통과 · 6 건너뜀) + Actions `ci` |
 | 게이트 · parity | 통과·실패를 실행 출력으로 |
 | 배포 · 롤백 | 매번 `/health`의 version 번호 일치 |
 | ledger | 운영 DB 트리거가 미통과 version 거부 |
 | 보호 | 실제 요청으로 401 · 200 · 429 |
 
-<p>작업마다 <b>AI 활용 기록</b>(<code>ai-usage/</code>) 한 건 — 9건</p>
+<p>작업마다 <b>AI 활용 기록</b>(<code>ai-usage/</code>) 한 건 — 10건</p>
 
 <!-- AI 가 실수한 예: sublinear_tf=True 로 ONNX 가 0.0018 어긋남 → parity 로 잡았다. 각 AI 활용 기록의 "연구자 검수" 칸은 발표 전에 연구자가 채운다. -->
 
@@ -502,11 +509,11 @@ rollback  rollback(작업용) · rollback-final(최종, 서버에 남은 version
 
 | 역할 | 모델 | 하는 일 |
 |---|---|---|
-| 보고서 작성 | **qwen3:4b-instruct-2507** (4B · Q4_K_M) | 근거 30편 묶음 요약 → 절마다 문장 + 인용 |
+| 보고서 작성 | **qwen3:4b-instruct-2507** (4B · Q4_K_M) | 근거 최대 300편을 논문별로 정리 → 리뷰 논문 11절, 문장마다 인용 |
 | 근거 찾기 | **bge-m3** (임베딩) | 질문에 맞는 논문을 의미 검색 |
 | 참고문헌 | (모델 안 씀) | DB 서지 값만 — LLM이 지어내지 않음 |
 
-<p><b>실제 생성</b>: 볼트에 5편 · 11-21 14:42 보고서 66초 · 인용 <b>27 / 30</b></p>
+<p><b>지금</b>: 보고서 261123-1912 — 근거 300편 · 인용 28편 · 한계·공백 인용 재검증 <b>100%</b></p>
 
 <!-- 확인(11-23): 웹 /api/llm/status 가 generation_model = qwen3:4b-instruct-2507-q4_K_M, embedding_model = bge-m3 로 응답. 보고서 파일 머리 model 값도 같은 모델. 서비스용 paperclf 학생 모델과 달리 이쪽은 LLM 이 직접 글을 쓴다 — 대신 문장마다 인용을 강제하고 참고문헌은 DB 에서만 가져온다. -->
 
