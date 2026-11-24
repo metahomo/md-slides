@@ -1,3 +1,4 @@
+import json
 import os
 import tempfile
 from pathlib import Path
@@ -167,3 +168,45 @@ class LogoTest(SimpleTestCase):
         from django.core.management import call_command
         call_command("build_site", out=str(out), base_path="/x/")
         self.assertTrue((out / "assets" / "a.png").is_file())
+
+
+class LiveTests(SimpleTestCase):
+    """서버에서 볼 때만 — md 수정 시각 조회·자동 새로 고침·PDF 버튼 (2026-11-24). 정적 사이트에는 없다."""
+
+    def setUp(self):
+        self.tmp = tempfile.TemporaryDirectory()
+        Path(self.tmp.name, "t.md").write_text("# 하나\n\n---\n\n# 둘\n", encoding="utf-8")
+        self.override = override_settings(SLIDES_DIR=self.tmp.name)
+        self.override.enable()
+
+    def tearDown(self):
+        self.override.disable()
+        self.tmp.cleanup()
+
+    def test_mtime_changes_when_md_is_edited(self):
+        first = self.client.get("/t/mtime").json()["mtime"]
+        p = Path(self.tmp.name, "t.md")
+        os.utime(p, ns=(first + 10**9, first + 10**9))
+        self.assertNotEqual(self.client.get("/t/mtime").json()["mtime"], first)
+        self.assertEqual(self.client.get("/nope/mtime").status_code, 404)
+
+    def test_live_page_has_reload_and_pdf_button(self):
+        html = self.client.get("/t/").content.decode()
+        self.assertIn('href="/t.pdf"', html)
+        self.assertIn("/t/mtime", html)
+
+    def test_static_site_watches_version_and_links_pdf(self):
+        out = Path(self.tmp.name, "_out")
+        from django.core.management import call_command
+        call_command("build_site", out=str(out), base_path="/x/")
+        html = (out / "t" / "index.html").read_text(encoding="utf-8")
+        self.assertIn('href="/x/t.pdf"', html)  # PDF 는 배포 때 Actions 가 만든다
+        self.assertIn('"version.json"', html)
+        self.assertNotIn("/mtime", html)
+        v1 = json.loads((out / "t" / "version.json").read_text(encoding="utf-8"))["version"]
+        Path(self.tmp.name, "t.md").write_text("# 하나\n\n---\n\n# 셋\n", encoding="utf-8")
+        call_command("build_site", out=str(out), base_path="/x/")
+        self.assertNotEqual(json.loads((out / "t" / "version.json").read_text(encoding="utf-8"))["version"], v1)
+
+    def test_pdf_of_unknown_deck_is_404(self):
+        self.assertEqual(self.client.get("/nope.pdf").status_code, 404)

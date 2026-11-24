@@ -5,6 +5,8 @@
 결과: <out>/index.html (목록), <out>/<slug>/index.html (발표 화면)
 """
 
+import hashlib
+import json
 import shutil
 from pathlib import Path
 
@@ -47,8 +49,12 @@ class Command(BaseCommand):
                 page = out_dir / deck.slug / "index.html"
                 page.parent.mkdir()
                 page.write_text(
-                    render_to_string("slides/deck_detail.html", {"deck": deck}), encoding="utf-8"
+                    render_to_string("slides/deck_detail.html", {"deck": deck, "static": True}), encoding="utf-8"
                 )
+                # 열린 공개 슬라이드가 20초마다 이 파일을 보고, md 가 바뀌어 다시 배포되면 새로 고친다
+                md = decks_dir() / f"{deck.slug}.md"
+                digest = hashlib.sha256(md.read_bytes()).hexdigest()[:16]
+                (page.parent / "version.json").write_text(json.dumps({"version": digest}), encoding="utf-8")
         finally:
             set_script_prefix(old_prefix)
 

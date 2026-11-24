@@ -24,6 +24,24 @@ jobs:
       - run: uv sync
       - run: uv run pytest -q
       - run: uv run python manage.py build_site --out _site --base-path "/${{ github.event.repository.name }}/"
+      # 덱마다 화면 그대로의 PDF(<slug>.pdf) — 슬라이드의 PDF ↓ 버튼이 가리킨다. 실패해도 슬라이드 배포는 계속한다 (2026-11-24)
+      # apt 미러가 느려 10분 넘게 멈춘 적이 있다(11-24) → apt 를 쓰지 않고 한글 글꼴만 받는다, 6분 넘으면 건너뛴다
+      - name: PDF
+        continue-on-error: true
+        timeout-minutes: 6
+        run: |
+          mkdir -p ~/.local/share/fonts
+          curl -sSfL -o ~/.local/share/fonts/NotoSansKR.ttf "https://github.com/google/fonts/raw/main/ofl/notosanskr/NotoSansKR%5Bwght%5D.ttf"
+          fc-cache -f >/dev/null
+          uv run --no-project --with playwright==1.55.0 playwright install --only-shell chromium
+          mkdir -p _srv && ln -s "$PWD/_site" "_srv/${{ github.event.repository.name }}"
+          (cd _srv && python3 -m http.server 8765 --bind 127.0.0.1 >/dev/null 2>&1 &)
+          sleep 2
+          for d in decks/*.md; do
+            s=$(basename "$d" .md)
+            uv run --no-project --with playwright==1.55.0 --with img2pdf python -I tools/deck_pdf.py \
+              "http://127.0.0.1:8765/${{ github.event.repository.name }}/$s/" "_site/$s.pdf"
+          done
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
         with:

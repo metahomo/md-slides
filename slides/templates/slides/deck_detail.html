@@ -105,11 +105,16 @@
         .theme-orange .reveal .slides > section.has-logos:not(.lead) { padding-top: 62px !important; }
         .theme-orange .reveal .slide-number, .theme-orange .reveal .controls, .theme-orange .reveal .progress { display: none !important; }  /* 쪽 번호는 꼬리말이 그린다, 넘기기는 키·스와이프 */
         .back { position: fixed; top: 12px; left: 16px; z-index: 30; font: 14px var(--r-main-font); color: #64748b; text-decoration: none; }
+        /* PDF 버튼 (서버에서 볼 때만, 2026-11-24) */
+        .pdf-btn { position: fixed; top: 8px; left: 112px; z-index: 30; font: 12px sans-serif; color: #fff; background: #e8743f; padding: 3px 10px; border-radius: 12px; text-decoration: none; opacity: .85; }
+        .pdf-btn:hover { opacity: 1; }
+        .pdf-btn.busy { background: #94a3b8; pointer-events: none; }
     </style>
 </head>
 
 <body{% if deck.theme %} class="theme-{{ deck.theme }}"{% endif %} data-footer="{{ deck.footer }}" data-base="{% url 'deck_list' %}" data-logos="{{ deck.logos|join:',' }}">
     <a class="back" href="{% url 'deck_list' %}">← 강의안 목록</a>
+    {% if live or static %}<a class="pdf-btn" href="{% url 'deck_list' %}{{ deck.slug }}.pdf" download title="화면 그대로 PDF 로 내려받기">PDF ↓</a>{% endif %}
     <div class="reveal">
         <div class="slides">
             {% for slide in deck.slides %}
@@ -236,6 +241,31 @@
         Reveal.on('ready', e => { decorate(); fitAll(e.currentSlide); });
         Reveal.on('slidechanged', e => fitAll(e.currentSlide));
     </script>
+    {% if live or static %}
+    <script>
+        // 새 판이 나오면 저절로 새로 고침 — 같은 장(#/n)에서 다시 읽는다 (2026-11-24)
+        // 서버(live): 1초마다 md 수정 시각 · 공개 사이트(static): 20초마다 version.json(배포 때 md 내용 해시)
+        (() => {
+            const live = {{ live|yesno:"true,false" }};
+            const url = live ? "{% if live %}{% url 'deck_mtime' deck.slug %}{% endif %}" : "version.json";
+            let seen = null;
+            setInterval(async () => {
+                try {
+                    const r = await fetch(url + (live ? '' : '?t=' + Date.now()), { cache: 'no-store' });
+                    if (!r.ok) return;
+                    const v = JSON.stringify(await r.json());
+                    if (seen === null) seen = v;
+                    else if (v !== seen) location.reload();
+                } catch (e) { /* 재시작·배포 중 — 다음 번에 다시 */ }
+            }, live ? 1000 : 20000);
+            const btn = document.querySelector('.pdf-btn');
+            if (btn && live) btn.addEventListener('click', () => {
+                btn.classList.add('busy'); btn.textContent = 'PDF 만드는 중…';
+                setTimeout(() => { btn.classList.remove('busy'); btn.textContent = 'PDF ↓'; }, 30000);
+            });
+        })();
+    </script>
+    {% endif %}
 
 </body>
 
